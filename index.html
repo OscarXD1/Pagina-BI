@@ -1,0 +1,3736 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Mi Asistente de Inteligencia de Negocios | Prototipo Educativo</title>
+  <style>
+    /* ==========================================================================
+       VARIABLES Y TEMAS (Light / Dark)
+       ========================================================================== */
+    :root {
+      --primary: #2563eb;
+      --primary-dark: #1d4ed8;
+      --primary-light: #dbeafe;
+      --primary-rgb: 37, 99, 235;
+
+      --accent: #0d9488;
+      --accent-light: #ccfbf1;
+
+      --bg-body: #f8fafc;
+      --bg-surface: #ffffff;
+      --bg-surface-elevated: #f1f5f9;
+      --border-color: #e2e8f0;
+      --border-focus: #3b82f6;
+
+      --text-main: #0f172a;
+      --text-muted: #475569;
+      --text-inverted: #ffffff;
+
+      --success: #16a34a;
+      --success-light: #dcfce7;
+      --warning: #d97706;
+      --warning-light: #fef3c7;
+      --danger: #dc2626;
+      --danger-light: #fee2e2;
+      --info: #0284c7;
+      --info-light: #e0f2fe;
+
+      --radius-sm: 6px;
+      --radius-md: 10px;
+      --radius-lg: 16px;
+      --radius-full: 9999px;
+
+      --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
+      --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.08), 0 2px 4px -2px rgba(0, 0, 0, 0.04);
+      --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -4px rgba(0, 0, 0, 0.05);
+
+      --font-family: system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    }
+
+    [data-theme="dark"] {
+      --bg-body: #0b0f19;
+      --bg-surface: #131b2e;
+      --bg-surface-elevated: #1e293b;
+      --border-color: #27354f;
+      --border-focus: #60a5fa;
+
+      --text-main: #f1f5f9;
+      --text-muted: #94a3b8;
+      --text-inverted: #0f172a;
+
+      --primary-light: rgba(37, 99, 235, 0.2);
+      --accent-light: rgba(13, 148, 136, 0.2);
+      --success-light: rgba(22, 163, 74, 0.2);
+      --warning-light: rgba(217, 119, 6, 0.2);
+      --danger-light: rgba(220, 38, 38, 0.2);
+      --info-light: rgba(2, 132, 199, 0.2);
+
+      --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.3);
+      --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.4);
+      --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.5);
+    }
+
+    /* ==========================================================================
+       RESET Y BASE
+       ========================================================================== */
+    *, *::before, *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: var(--font-family);
+      background-color: var(--bg-body);
+      color: var(--text-main);
+      line-height: 1.5;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      transition: background-color 0.25s ease, color 0.25s ease;
+    }
+
+    button, input, select, textarea {
+      font-family: inherit;
+      font-size: inherit;
+    }
+
+    a {
+      color: var(--primary);
+      text-decoration: none;
+    }
+
+    /* ==========================================================================
+       BARRA DE NAVEGACIÓN Y ENCABEZADO
+       ========================================================================== */
+    .top-header {
+      background-color: var(--bg-surface);
+      border-bottom: 1px solid var(--border-color);
+      position: sticky;
+      top: 0;
+      z-index: 50;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .header-container {
+      max-width: 1380px;
+      margin: 0 auto;
+      padding: 0.75rem 1.25rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+    }
+
+    .brand-wrap {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+
+    .brand-icon {
+      width: 40px;
+      height: 40px;
+      border-radius: var(--radius-md);
+      background: linear-gradient(135deg, var(--primary), var(--accent));
+      color: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.35rem;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .brand-text h1 {
+      font-size: 1.15rem;
+      font-weight: 700;
+      line-height: 1.2;
+      color: var(--text-main);
+    }
+
+    .brand-text span {
+      font-size: 0.78rem;
+      color: var(--text-muted);
+      display: block;
+    }
+
+    .header-actions {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .theme-toggle-btn {
+      background: var(--bg-surface-elevated);
+      border: 1px solid var(--border-color);
+      color: var(--text-main);
+      padding: 0.45rem 0.8rem;
+      border-radius: var(--radius-md);
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      font-size: 0.85rem;
+      font-weight: 500;
+      transition: all 0.15s ease;
+    }
+
+    .theme-toggle-btn:hover {
+      border-color: var(--border-focus);
+    }
+
+    /* Pestañas de Navegación */
+    .nav-tabs-wrapper {
+      background-color: var(--bg-surface);
+      border-bottom: 1px solid var(--border-color);
+      overflow-x: auto;
+    }
+
+    .nav-tabs {
+      max-width: 1380px;
+      margin: 0 auto;
+      display: flex;
+      gap: 0.25rem;
+      padding: 0.25rem 1.25rem 0;
+      list-style: none;
+    }
+
+    .nav-tab-btn {
+      background: transparent;
+      border: none;
+      border-bottom: 3px solid transparent;
+      padding: 0.75rem 1rem;
+      color: var(--text-muted);
+      font-weight: 600;
+      font-size: 0.92rem;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      white-space: nowrap;
+      transition: color 0.15s, border-color 0.15s;
+    }
+
+    .nav-tab-btn:hover {
+      color: var(--text-main);
+    }
+
+    .nav-tab-btn.active {
+      color: var(--primary);
+      border-bottom-color: var(--primary);
+    }
+
+    .badge-counter {
+      background-color: var(--primary-light);
+      color: var(--primary);
+      font-size: 0.72rem;
+      padding: 0.1rem 0.45rem;
+      border-radius: var(--radius-full);
+      font-weight: 700;
+    }
+
+    /* ==========================================================================
+       CONTENIDO PRINCIPAL Y VISTAS
+       ========================================================================== */
+    main.main-content {
+      max-width: 1380px;
+      width: 100%;
+      margin: 0 auto;
+      padding: 1.5rem 1.25rem 3rem;
+      flex: 1;
+    }
+
+    .tab-view {
+      display: none;
+    }
+
+    .tab-view.active {
+      display: block;
+      animation: fadeIn 0.2s ease-in-out;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(4px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Encabezado descriptivo de vista */
+    .view-hero {
+      background: linear-gradient(135deg, rgba(37, 99, 235, 0.08), rgba(13, 148, 136, 0.06));
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-lg);
+      padding: 1.25rem 1.5rem;
+      margin-bottom: 1.5rem;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+    }
+
+    .view-hero-text h2 {
+      font-size: 1.35rem;
+      font-weight: 700;
+      color: var(--text-main);
+      margin-bottom: 0.25rem;
+    }
+
+    .view-hero-text p {
+      color: var(--text-muted);
+      font-size: 0.92rem;
+      max-width: 760px;
+    }
+
+    /* ==========================================================================
+       COMPONENTES REUTILIZABLES: TARJETAS, BOTONES, ALERTAS
+       ========================================================================== */
+    .card {
+      background-color: var(--bg-surface);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-md);
+      box-shadow: var(--shadow-sm);
+      overflow: hidden;
+    }
+
+    .card-header {
+      padding: 1rem 1.25rem;
+      border-bottom: 1px solid var(--border-color);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 0.75rem;
+    }
+
+    .card-header h3 {
+      font-size: 1.05rem;
+      font-weight: 700;
+      color: var(--text-main);
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .card-body {
+      padding: 1.25rem;
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.45rem;
+      font-weight: 600;
+      font-size: 0.88rem;
+      padding: 0.55rem 1rem;
+      border-radius: var(--radius-md);
+      cursor: pointer;
+      border: 1px solid transparent;
+      transition: all 0.15s ease;
+    }
+
+    .btn-primary {
+      background-color: var(--primary);
+      color: #fff;
+    }
+    .btn-primary:hover {
+      background-color: var(--primary-dark);
+    }
+
+    .btn-outline {
+      background-color: transparent;
+      border-color: var(--border-color);
+      color: var(--text-main);
+    }
+    .btn-outline:hover {
+      background-color: var(--bg-surface-elevated);
+      border-color: var(--border-focus);
+    }
+
+    .btn-sm {
+      padding: 0.35rem 0.65rem;
+      font-size: 0.8rem;
+    }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.3rem;
+      font-size: 0.75rem;
+      font-weight: 600;
+      padding: 0.2rem 0.55rem;
+      border-radius: var(--radius-full);
+      text-transform: uppercase;
+      letter-spacing: 0.4px;
+    }
+
+    .badge-primary { background: var(--primary-light); color: var(--primary); }
+    .badge-success { background: var(--success-light); color: var(--success); }
+    .badge-warning { background: var(--warning-light); color: var(--warning); }
+    .badge-danger { background: var(--danger-light); color: var(--danger); }
+    .badge-info { background: var(--info-light); color: var(--info); }
+
+    .help-tooltip {
+      position: relative;
+      cursor: help;
+      display: inline-flex;
+      color: var(--text-muted);
+      margin-left: 0.3rem;
+    }
+
+    /* ==========================================================================
+       VISTA 1: DASHBOARD DE NEGOCIO INTERACTIVO
+       ========================================================================== */
+    .dashboard-toolbar {
+      background-color: var(--bg-surface);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-md);
+      padding: 1rem 1.25rem;
+      margin-bottom: 1.5rem;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .filters-group {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 0.85rem;
+    }
+
+    .filter-item {
+      display: flex;
+      flex-direction: column;
+      gap: 0.25rem;
+    }
+
+    .filter-item label {
+      font-size: 0.78rem;
+      font-weight: 600;
+      color: var(--text-muted);
+      text-transform: uppercase;
+    }
+
+    .filter-item select {
+      background-color: var(--bg-surface-elevated);
+      color: var(--text-main);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-sm);
+      padding: 0.4rem 0.75rem;
+      font-size: 0.88rem;
+      outline: none;
+      cursor: pointer;
+    }
+
+    .filter-item select:focus {
+      border-color: var(--border-focus);
+    }
+
+    /* Grid de KPIs */
+    .kpi-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 1.25rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .kpi-card {
+      background-color: var(--bg-surface);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-md);
+      padding: 1.25rem;
+      box-shadow: var(--shadow-sm);
+      display: flex;
+      flex-direction: column;
+      position: relative;
+      overflow: hidden;
+      transition: transform 0.15s ease, box-shadow 0.15s ease;
+    }
+
+    .kpi-card:hover {
+      transform: translateY(-2px);
+      box-shadow: var(--shadow-md);
+    }
+
+    .kpi-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 0.5rem;
+    }
+
+    .kpi-title {
+      font-size: 0.82rem;
+      font-weight: 600;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .kpi-icon {
+      font-size: 1.3rem;
+      opacity: 0.85;
+    }
+
+    .kpi-value {
+      font-size: 1.85rem;
+      font-weight: 800;
+      color: var(--text-main);
+      line-height: 1.2;
+      margin-bottom: 0.35rem;
+    }
+
+    .kpi-trend {
+      font-size: 0.82rem;
+      display: flex;
+      align-items: center;
+      gap: 0.3rem;
+      font-weight: 600;
+    }
+
+    .kpi-trend.positive { color: var(--success); }
+    .kpi-trend.neutral { color: var(--info); }
+    .kpi-trend.warning { color: var(--warning); }
+
+    .kpi-footnote {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      margin-top: 0.4rem;
+    }
+
+    /* Grid de Gráficos */
+    .charts-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 1.25rem;
+      margin-bottom: 1.5rem;
+    }
+
+    @media (max-width: 980px) {
+      .charts-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .chart-container {
+      position: relative;
+      width: 100%;
+      min-height: 260px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .chart-svg {
+      width: 100%;
+      height: 260px;
+      display: block;
+      overflow: visible;
+    }
+
+    .chart-legend {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 1rem;
+      margin-top: 0.75rem;
+      font-size: 0.82rem;
+      color: var(--text-muted);
+    }
+
+    .legend-item {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+    }
+
+    .legend-color {
+      width: 10px;
+      height: 10px;
+      border-radius: 2px;
+    }
+
+    /* Tabla de Datos de BI */
+    .table-container {
+      overflow-x: auto;
+    }
+
+    .data-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.88rem;
+      text-align: left;
+    }
+
+    .data-table th {
+      background-color: var(--bg-surface-elevated);
+      color: var(--text-muted);
+      font-weight: 600;
+      padding: 0.75rem 1rem;
+      border-bottom: 1px solid var(--border-color);
+      cursor: pointer;
+      user-select: none;
+      white-space: nowrap;
+    }
+
+    .data-table th:hover {
+      color: var(--primary);
+    }
+
+    .data-table td {
+      padding: 0.75rem 1rem;
+      border-bottom: 1px solid var(--border-color);
+      color: var(--text-main);
+      white-space: nowrap;
+    }
+
+    .data-table tbody tr:hover {
+      background-color: var(--bg-surface-elevated);
+    }
+
+    .table-pagination {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0.85rem 1.25rem;
+      border-top: 1px solid var(--border-color);
+      font-size: 0.84rem;
+      color: var(--text-muted);
+    }
+
+    /* Tooltip interactivo para gráficos */
+    .chart-tooltip {
+      position: absolute;
+      background: rgba(15, 23, 42, 0.92);
+      color: #fff;
+      padding: 0.4rem 0.75rem;
+      border-radius: var(--radius-sm);
+      font-size: 0.78rem;
+      pointer-events: none;
+      opacity: 0;
+      transition: opacity 0.15s ease, transform 0.15s ease;
+      z-index: 20;
+      white-space: nowrap;
+      box-shadow: var(--shadow-md);
+      transform: translate(-50%, -120%);
+    }
+
+    /* ==========================================================================
+       VISTA 2: ASISTENTE CONSULTOR BI (Chat & Respuestas Guiadas)
+       ========================================================================== */
+    .assistant-layout {
+      display: grid;
+      grid-template-columns: 320px 1fr;
+      gap: 1.5rem;
+    }
+
+    @media (max-width: 860px) {
+      .assistant-layout {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .questions-sidebar {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+
+    .quick-topic-btn {
+      width: 100%;
+      text-align: left;
+      background: var(--bg-surface);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-md);
+      padding: 0.75rem 1rem;
+      font-size: 0.88rem;
+      color: var(--text-main);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 0.65rem;
+      transition: all 0.15s ease;
+    }
+
+    .quick-topic-btn:hover, .quick-topic-btn.active {
+      background: var(--primary-light);
+      border-color: var(--primary);
+      color: var(--primary-dark);
+      font-weight: 600;
+    }
+
+    .chat-window {
+      background: var(--bg-surface);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-md);
+      display: flex;
+      flex-direction: column;
+      height: 600px;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .chat-messages {
+      flex: 1;
+      padding: 1.25rem;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+
+    .chat-bubble {
+      max-width: 85%;
+      padding: 1rem 1.25rem;
+      border-radius: var(--radius-lg);
+      font-size: 0.92rem;
+      line-height: 1.55;
+    }
+
+    .chat-bubble.bot {
+      align-self: flex-start;
+      background-color: var(--bg-surface-elevated);
+      color: var(--text-main);
+      border: 1px solid var(--border-color);
+      border-bottom-left-radius: 4px;
+    }
+
+    .chat-bubble.user {
+      align-self: flex-end;
+      background-color: var(--primary);
+      color: #fff;
+      border-bottom-right-radius: 4px;
+    }
+
+    .bot-header-badge {
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+      font-size: 0.78rem;
+      font-weight: 700;
+      color: var(--primary);
+      margin-bottom: 0.4rem;
+      text-transform: uppercase;
+    }
+
+    .chat-bubble.user .bot-header-badge {
+      color: rgba(255, 255, 255, 0.85);
+    }
+
+    .chat-bubble p {
+      margin-bottom: 0.6rem;
+    }
+    .chat-bubble p:last-child {
+      margin-bottom: 0;
+    }
+
+    .chat-bubble ul, .chat-bubble ol {
+      margin-left: 1.2rem;
+      margin-bottom: 0.6rem;
+    }
+
+    .chat-bubble code {
+      background: rgba(0, 0, 0, 0.08);
+      padding: 0.15rem 0.35rem;
+      border-radius: 4px;
+      font-size: 0.85em;
+    }
+
+    [data-theme="dark"] .chat-bubble code {
+      background: rgba(255, 255, 255, 0.1);
+    }
+
+    .chat-input-area {
+      padding: 1rem 1.25rem;
+      border-top: 1px solid var(--border-color);
+      display: flex;
+      gap: 0.75rem;
+      background-color: var(--bg-surface);
+    }
+
+    .chat-input {
+      flex: 1;
+      background: var(--bg-surface-elevated);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-md);
+      padding: 0.65rem 1rem;
+      color: var(--text-main);
+      outline: none;
+    }
+
+    .chat-input:focus {
+      border-color: var(--border-focus);
+    }
+
+    /* ==========================================================================
+       VISTA 3: SELECTOR DE VISUALIZACIONES (Chart Picker)
+       ========================================================================== */
+    .chart-picker-container {
+      display: grid;
+      grid-template-columns: 1fr 1.2fr;
+      gap: 1.5rem;
+    }
+
+    @media (max-width: 900px) {
+      .chart-picker-container {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .decision-step {
+      margin-bottom: 1.25rem;
+    }
+
+    .decision-label {
+      font-weight: 700;
+      font-size: 0.95rem;
+      margin-bottom: 0.6rem;
+      display: block;
+      color: var(--text-main);
+    }
+
+    .option-cards-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+      gap: 0.65rem;
+    }
+
+    .option-card-btn {
+      background: var(--bg-surface-elevated);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-md);
+      padding: 0.85rem 0.6rem;
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.15s ease;
+      color: var(--text-main);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.35rem;
+      font-size: 0.85rem;
+      font-weight: 600;
+    }
+
+    .option-card-btn .opt-icon {
+      font-size: 1.35rem;
+    }
+
+    .option-card-btn:hover {
+      border-color: var(--border-focus);
+    }
+
+    .option-card-btn.selected {
+      background: var(--primary-light);
+      border-color: var(--primary);
+      color: var(--primary-dark);
+      box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.25);
+    }
+
+    .chart-recommendation-card {
+      background: var(--bg-surface);
+      border: 2px solid var(--primary);
+      border-radius: var(--radius-lg);
+      padding: 1.5rem;
+      box-shadow: var(--shadow-md);
+    }
+
+    .rec-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 1rem;
+      padding-bottom: 0.75rem;
+      border-bottom: 1px solid var(--border-color);
+    }
+
+    .rec-chart-name {
+      font-size: 1.4rem;
+      font-weight: 800;
+      color: var(--primary);
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .rec-preview-box {
+      background: var(--bg-surface-elevated);
+      border-radius: var(--radius-md);
+      padding: 1rem;
+      text-align: center;
+      margin-bottom: 1.25rem;
+      min-height: 180px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .rec-details-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1rem;
+      font-size: 0.88rem;
+    }
+
+    @media (max-width: 600px) {
+      .rec-details-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .rec-box-pros {
+      background: var(--success-light);
+      border-left: 3px solid var(--success);
+      padding: 0.75rem;
+      border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+    }
+
+    .rec-box-cons {
+      background: var(--danger-light);
+      border-left: 3px solid var(--danger);
+      padding: 0.75rem;
+      border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+    }
+
+    /* ==========================================================================
+       VISTA 4: CALCULADORA DE KPIS DE NEGOCIO
+       ========================================================================== */
+    .kpi-calc-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+      gap: 1.5rem;
+    }
+
+    .calc-card {
+      background: var(--bg-surface);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-md);
+      padding: 1.25rem;
+      display: flex;
+      flex-direction: column;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .calc-header {
+      margin-bottom: 1rem;
+    }
+
+    .calc-header h4 {
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: var(--text-main);
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+    }
+
+    .calc-header p {
+      font-size: 0.82rem;
+      color: var(--text-muted);
+      margin-top: 0.25rem;
+    }
+
+    .calc-formula-tag {
+      display: inline-block;
+      background: var(--bg-surface-elevated);
+      color: var(--primary);
+      font-family: monospace;
+      font-size: 0.82rem;
+      padding: 0.25rem 0.5rem;
+      border-radius: var(--radius-sm);
+      margin: 0.5rem 0;
+    }
+
+    .calc-form {
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+      margin-bottom: 1.25rem;
+    }
+
+    .form-field {
+      display: flex;
+      flex-direction: column;
+      gap: 0.2rem;
+    }
+
+    .form-field label {
+      font-size: 0.82rem;
+      font-weight: 600;
+      color: var(--text-muted);
+    }
+
+    .form-field input {
+      background: var(--bg-surface-elevated);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-sm);
+      padding: 0.45rem 0.7rem;
+      color: var(--text-main);
+      font-size: 0.92rem;
+      outline: none;
+    }
+
+    .form-field input:focus {
+      border-color: var(--border-focus);
+    }
+
+    .calc-result-box {
+      margin-top: auto;
+      background: var(--bg-surface-elevated);
+      border: 1px dashed var(--border-color);
+      border-radius: var(--radius-md);
+      padding: 0.85rem 1rem;
+      text-align: center;
+    }
+
+    .calc-result-val {
+      font-size: 1.5rem;
+      font-weight: 800;
+      color: var(--primary);
+      margin-bottom: 0.25rem;
+    }
+
+    .calc-result-status {
+      font-size: 0.82rem;
+      font-weight: 600;
+    }
+
+    /* ==========================================================================
+       VISTA 5: RETOS Y QUIZ DE BI
+       ========================================================================== */
+    .quiz-container {
+      max-width: 860px;
+      margin: 0 auto;
+    }
+
+    .quiz-score-bar {
+      background: var(--bg-surface);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-md);
+      padding: 1rem 1.5rem;
+      margin-bottom: 1.5rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .score-badge {
+      font-size: 1.15rem;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .challenge-card {
+      background: var(--bg-surface);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-lg);
+      padding: 1.5rem;
+      margin-bottom: 1.5rem;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .challenge-number {
+      font-size: 0.78rem;
+      font-weight: 700;
+      color: var(--primary);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-bottom: 0.4rem;
+    }
+
+    .challenge-title {
+      font-size: 1.15rem;
+      font-weight: 700;
+      color: var(--text-main);
+      margin-bottom: 0.6rem;
+    }
+
+    .challenge-context {
+      font-size: 0.92rem;
+      color: var(--text-muted);
+      margin-bottom: 1rem;
+      background: var(--bg-surface-elevated);
+      padding: 0.85rem 1rem;
+      border-radius: var(--radius-md);
+      border-left: 3px solid var(--primary);
+    }
+
+    .quiz-options {
+      display: flex;
+      flex-direction: column;
+      gap: 0.65rem;
+      margin-bottom: 1rem;
+    }
+
+    .quiz-option-btn {
+      background: var(--bg-surface);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-md);
+      padding: 0.85rem 1rem;
+      text-align: left;
+      font-size: 0.9rem;
+      color: var(--text-main);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      transition: all 0.15s ease;
+    }
+
+    .quiz-option-btn:hover:not(:disabled) {
+      background: var(--bg-surface-elevated);
+      border-color: var(--border-focus);
+    }
+
+    .quiz-option-btn.correct {
+      background: var(--success-light);
+      border-color: var(--success);
+      color: var(--success);
+      font-weight: 700;
+    }
+
+    .quiz-option-btn.incorrect {
+      background: var(--danger-light);
+      border-color: var(--danger);
+      color: var(--danger);
+      font-weight: 700;
+    }
+
+    .quiz-feedback {
+      display: none;
+      padding: 0.85rem 1rem;
+      border-radius: var(--radius-md);
+      font-size: 0.88rem;
+      line-height: 1.5;
+      margin-top: 0.75rem;
+    }
+
+    .quiz-feedback.show-correct {
+      display: block;
+      background: var(--success-light);
+      color: #14532d;
+      border: 1px solid var(--success);
+    }
+
+    .quiz-feedback.show-incorrect {
+      display: block;
+      background: var(--danger-light);
+      color: #7f1d1d;
+      border: 1px solid var(--danger);
+    }
+
+    /* ==========================================================================
+       VISTA 6: GLOSARIO Y MODELADO ESTRELLA
+       ========================================================================== */
+    .glossary-search-bar {
+      margin-bottom: 1.5rem;
+      display: flex;
+      gap: 0.75rem;
+    }
+
+    .glossary-input {
+      flex: 1;
+      background: var(--bg-surface);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-md);
+      padding: 0.65rem 1rem;
+      color: var(--text-main);
+      font-size: 0.95rem;
+      outline: none;
+    }
+
+    .glossary-input:focus {
+      border-color: var(--border-focus);
+    }
+
+    .schema-diagram-card {
+      background: var(--bg-surface);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-lg);
+      padding: 1.5rem;
+      margin-bottom: 2rem;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .schema-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1.25rem;
+      margin-top: 1.25rem;
+      align-items: center;
+    }
+
+    @media (max-width: 860px) {
+      .schema-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .schema-table-box {
+      background: var(--bg-surface-elevated);
+      border: 2px solid var(--border-color);
+      border-radius: var(--radius-md);
+      overflow: hidden;
+    }
+
+    .schema-table-box.fact-table {
+      border-color: var(--primary);
+      box-shadow: 0 0 12px rgba(37, 99, 235, 0.2);
+    }
+
+    .schema-header {
+      padding: 0.5rem 0.85rem;
+      font-weight: 700;
+      font-size: 0.85rem;
+      display: flex;
+      justify-content: space-between;
+      color: #fff;
+    }
+
+    .schema-header.dim { background: #0284c7; }
+    .schema-header.fact { background: #2563eb; }
+
+    .schema-fields {
+      padding: 0.65rem 0.85rem;
+      font-family: monospace;
+      font-size: 0.8rem;
+      line-height: 1.6;
+    }
+
+    .schema-fields .pk { color: #d97706; font-weight: bold; }
+    .schema-fields .fk { color: #2563eb; font-weight: bold; }
+
+    .glossary-cards-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 1.25rem;
+    }
+
+    .glossary-card {
+      background: var(--bg-surface);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-md);
+      padding: 1.2rem;
+      box-shadow: var(--shadow-sm);
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+    }
+
+    .glossary-card h4 {
+      font-size: 1.05rem;
+      font-weight: 700;
+      color: var(--primary);
+    }
+
+    .glossary-card p {
+      font-size: 0.88rem;
+      color: var(--text-muted);
+      line-height: 1.5;
+    }
+
+    .glossary-tag {
+      align-self: flex-start;
+      margin-top: auto;
+      font-size: 0.72rem;
+      padding: 0.15rem 0.45rem;
+      background: var(--bg-surface-elevated);
+      color: var(--text-muted);
+      border-radius: var(--radius-sm);
+    }
+
+    /* ==========================================================================
+       MODAL DE REPORTE EJECUTIVO
+       ========================================================================== */
+    .modal-overlay {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0, 0, 0, 0.5);
+      backdrop-filter: blur(4px);
+      z-index: 100;
+      align-items: center;
+      justify-content: center;
+      padding: 1rem;
+    }
+
+    .modal-overlay.open {
+      display: flex;
+    }
+
+    .modal-dialog {
+      background: var(--bg-surface);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-lg);
+      max-width: 750px;
+      width: 100%;
+      max-height: 90vh;
+      display: flex;
+      flex-direction: column;
+      box-shadow: var(--shadow-lg);
+      overflow: hidden;
+    }
+
+    .modal-header {
+      padding: 1.25rem 1.5rem;
+      border-bottom: 1px solid var(--border-color);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .modal-body {
+      padding: 1.5rem;
+      overflow-y: auto;
+      line-height: 1.6;
+      font-size: 0.95rem;
+    }
+
+    .modal-footer {
+      padding: 1rem 1.5rem;
+      border-top: 1px solid var(--border-color);
+      display: flex;
+      justify-content: flex-end;
+      gap: 0.75rem;
+    }
+
+    /* ==========================================================================
+       FOOTER
+       ========================================================================== */
+    footer.app-footer {
+      background-color: var(--bg-surface);
+      border-top: 1px solid var(--border-color);
+      padding: 1.5rem 1.25rem;
+      text-align: center;
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      margin-top: auto;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ==========================================================================
+       ENCABEZADO SUPERIOR
+       ========================================================================== -->
+  <header class="top-header">
+    <div class="header-container">
+      <div class="brand-wrap">
+        <div class="brand-icon" aria-hidden="true">📊</div>
+        <div class="brand-text">
+          <h1>Mi asistente de Inteligencia de Negocios</h1>
+          <span>Aprende BI, análisis de datos y toma de decisiones estratégicas</span>
+        </div>
+      </div>
+      <div class="header-actions">
+        <button id="themeToggleBtn" class="theme-toggle-btn" title="Alternar tema claro/oscuro">
+          <span id="themeIcon">🌙</span> <span id="themeText">Modo Oscuro</span>
+        </button>
+        <button id="btnOpenReport" class="btn btn-primary btn-sm">
+          <span>📄</span> Generar Reporte BI
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- PESTAÑAS DE NAVEGACIÓN -->
+  <nav class="nav-tabs-wrapper" aria-label="Secciones del prototipo">
+    <ul class="nav-tabs" role="tablist">
+      <li>
+        <button class="nav-tab-btn active" data-tab="tab-dashboard" role="tab" aria-selected="true">
+          <span>📈</span> 1. Dashboard Interactivo
+        </button>
+      </li>
+      <li>
+        <button class="nav-tab-btn" data-tab="tab-assistant" role="tab" aria-selected="false">
+          <span>🤖</span> 2. Consultor Virtual BI
+          <span class="badge-counter">AI</span>
+        </button>
+      </li>
+      <li>
+        <button class="nav-tab-btn" data-tab="tab-picker" role="tab" aria-selected="false">
+          <span>📊</span> 3. Selector de Gráficos
+        </button>
+      </li>
+      <li>
+        <button class="nav-tab-btn" data-tab="tab-calculators" role="tab" aria-selected="false">
+          <span>🧮</span> 4. Calculadora de KPIs
+        </button>
+      </li>
+      <li>
+        <button class="nav-tab-btn" data-tab="tab-quiz" role="tab" aria-selected="false">
+          <span>🎯</span> 5. Casos Prácticos & Quiz
+          <span class="badge-counter" id="quizBadgeScore">0/5</span>
+        </button>
+      </li>
+      <li>
+        <button class="nav-tab-btn" data-tab="tab-glossary" role="tab" aria-selected="false">
+          <span>📚</span> 6. Modelo de Datos & Glosario
+        </button>
+      </li>
+    </ul>
+  </nav>
+
+  <!-- ==========================================================================
+       CONTENIDO PRINCIPAL
+       ========================================================================== -->
+  <main class="main-content">
+
+    <!-- ----------------------------------------------------------------------
+         VISTA 1: DASHBOARD INTERACTIVO DE BI
+         ---------------------------------------------------------------------- -->
+    <section id="tab-dashboard" class="tab-view active" role="tabpanel">
+      <div class="view-hero">
+        <div class="view-hero-text">
+          <h2>Panel de Control: Ventas Retail & Rentabilidad</h2>
+          <p>
+            Un dashboard en BI responde a preguntas clave de negocio mediante métricas e indicadores sintetizados. Filtra por región o categoría y observa cómo se recalculan los KPIs y visualizaciones en tiempo real.
+          </p>
+        </div>
+        <div>
+          <button id="btnExportCSV" class="btn btn-outline btn-sm">
+            <span>📥</span> Exportar Datos (CSV)
+          </button>
+        </div>
+      </div>
+
+      <!-- Barra de Filtros -->
+      <div class="dashboard-toolbar">
+        <div class="filters-group">
+          <div class="filter-item">
+            <label for="filterRegion">Región Geográfica:</label>
+            <select id="filterRegion">
+              <option value="ALL">Todas las Regiones (Global)</option>
+              <option value="Norte">Región Norte</option>
+              <option value="Sur">Región Sur</option>
+              <option value="Centro">Región Centro</option>
+              <option value="Occidente">Región Occidente</option>
+            </select>
+          </div>
+
+          <div class="filter-item">
+            <label for="filterCategory">Categoría de Producto:</label>
+            <select id="filterCategory">
+              <option value="ALL">Todas las Categorías</option>
+              <option value="Tecnología">Tecnología & Hardware</option>
+              <option value="Mobiliario">Mobiliario de Oficina</option>
+              <option value="Papelería">Papelería y Suministros</option>
+              <option value="Software">Software & Licencias</option>
+            </select>
+          </div>
+
+          <div class="filter-item">
+            <label for="filterQuarter">Periodo Trimestral:</label>
+            <select id="filterQuarter">
+              <option value="ALL">Año Completo (Q1 - Q4)</option>
+              <option value="Q1">Q1 (Ene - Mar)</option>
+              <option value="Q2">Q2 (Abr - Jun)</option>
+              <option value="Q3">Q3 (Jul - Sep)</option>
+              <option value="Q4">Q4 (Oct - Dic)</option>
+            </select>
+          </div>
+        </div>
+
+        <div>
+          <button id="btnResetFilters" class="btn btn-outline btn-sm" title="Restablecer todos los filtros">
+            🔄 Reiniciar Filtros
+          </button>
+        </div>
+      </div>
+
+      <!-- Tarjetas de KPIs Reactivas -->
+      <div class="kpi-grid">
+        <div class="kpi-card">
+          <div class="kpi-top">
+            <span class="kpi-title">Ingresos Totales (Revenue)</span>
+            <span class="kpi-icon">💰</span>
+          </div>
+          <div class="kpi-value" id="kpiRevenue">$0</div>
+          <div class="kpi-trend positive" id="kpiRevenueTrend">
+            <span>▲ +12.4%</span> vs objetivo previsto
+          </div>
+          <div class="kpi-footnote">Facturación bruta acumulada</div>
+        </div>
+
+        <div class="kpi-card">
+          <div class="kpi-top">
+            <span class="kpi-title">Margen Bruto de Ganancia</span>
+            <span class="kpi-icon">📈</span>
+          </div>
+          <div class="kpi-value" id="kpiMargin">0%</div>
+          <div class="kpi-trend positive" id="kpiMarginTrend">
+            <span>● Saludable</span> (Meta &gt; 25%)
+          </div>
+          <div class="kpi-footnote">Beneficio neto / Ingreso total</div>
+        </div>
+
+        <div class="kpi-card">
+          <div class="kpi-top">
+            <span class="kpi-title">Ticket Promedio (AOV)</span>
+            <span class="kpi-icon">🏷️</span>
+          </div>
+          <div class="kpi-value" id="kpiAOV">$0</div>
+          <div class="kpi-trend neutral" id="kpiAovTrend">
+            <span>ℹ️ Promedio</span> por transacción
+          </div>
+          <div class="kpi-footnote">Ingreso dividido entre pedidos</div>
+        </div>
+
+        <div class="kpi-card">
+          <div class="kpi-top">
+            <span class="kpi-title">Volumen de Pedidos</span>
+            <span class="kpi-icon">📦</span>
+          </div>
+          <div class="kpi-value" id="kpiOrders">0</div>
+          <div class="kpi-trend positive" id="kpiOrdersTrend">
+            <span>▲ Alta rotación</span>
+          </div>
+          <div class="kpi-footnote">Total de órdenes procesadas</div>
+        </div>
+      </div>
+
+      <!-- Gráficos SVG Nativos -->
+      <div class="charts-grid">
+        <!-- Gráfico 1: Tendencia Temporal -->
+        <div class="card">
+          <div class="card-header">
+            <h3><span>📅</span> Tendencia de Ventas Mensuales (Evolución)</h3>
+            <span class="badge badge-primary">Línea de Tiempo</span>
+          </div>
+          <div class="card-body">
+            <div class="chart-container" id="lineChartBox">
+              <svg id="svgLineChart" class="chart-svg" viewBox="0 0 540 240"></svg>
+              <div id="lineTooltip" class="chart-tooltip"></div>
+            </div>
+            <div class="chart-legend">
+              <div class="legend-item">
+                <span class="legend-color" style="background:#2563eb;"></span>
+                <span>Ingresos ($ USD)</span>
+              </div>
+              <div class="legend-item">
+                <span class="legend-color" style="background:#0d9488;"></span>
+                <span>Ganancia Neta ($ USD)</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Gráfico 2: Ventas por Categoría -->
+        <div class="card">
+          <div class="card-header">
+            <h3><span>📊</span> Rendimiento por Categoría de Producto</h3>
+            <span class="badge badge-info">Barras Comparativas</span>
+          </div>
+          <div class="card-body">
+            <div class="chart-container" id="barChartBox">
+              <svg id="svgBarChart" class="chart-svg" viewBox="0 0 540 240"></svg>
+              <div id="barTooltip" class="chart-tooltip"></div>
+            </div>
+            <div class="chart-legend">
+              <div class="legend-item">
+                <span class="legend-color" style="background:#3b82f6;"></span>
+                <span>Ventas Totales ($)</span>
+              </div>
+              <div class="legend-item">
+                <span class="legend-color" style="background:#10b981;"></span>
+                <span>Margen (%)</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Gráfico 3: Participación Regional -->
+        <div class="card">
+          <div class="card-header">
+            <h3><span>🧭</span> Distribución de Ingresos por Región</h3>
+            <span class="badge badge-warning">Gráfico Donut</span>
+          </div>
+          <div class="card-body">
+            <div class="chart-container" id="donutChartBox">
+              <svg id="svgDonutChart" class="chart-svg" viewBox="0 0 540 240"></svg>
+              <div id="donutTooltip" class="chart-tooltip"></div>
+            </div>
+            <div class="chart-legend" id="donutLegend"></div>
+          </div>
+        </div>
+
+        <!-- Gráfico 4: Análisis de Eficiencia de Canales -->
+        <div class="card">
+          <div class="card-header">
+            <h3><span>🚀</span> Conversión por Canal de Venta</h3>
+            <span class="badge badge-success">Embudo & Cumplimiento</span>
+          </div>
+          <div class="card-body">
+            <div class="chart-container" id="channelChartBox">
+              <svg id="svgChannelChart" class="chart-svg" viewBox="0 0 540 240"></svg>
+              <div id="channelTooltip" class="chart-tooltip"></div>
+            </div>
+            <div class="chart-legend">
+              <div class="legend-item">
+                <span class="legend-color" style="background:#6366f1;"></span>
+                <span>Venta Directa</span>
+              </div>
+              <div class="legend-item">
+                <span class="legend-color" style="background:#ec4899;"></span>
+                <span>E-commerce Web</span>
+              </div>
+              <div class="legend-item">
+                <span class="legend-color" style="background:#f59e0b;"></span>
+                <span>Distribuidores B2B</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Tabla de Datos Detallada (Fact Records) -->
+      <div class="card">
+        <div class="card-header">
+          <h3><span>📋</span> Registro Detallado de Transacciones (Fact Table)</h3>
+          <div style="display:flex; align-items:center; gap:0.5rem;">
+            <input type="text" id="tableSearch" placeholder="Buscar producto, vendedor..." style="background:var(--bg-surface-elevated); border:1px solid var(--border-color); border-radius:var(--radius-sm); padding:0.3rem 0.6rem; font-size:0.82rem; color:var(--text-main);">
+          </div>
+        </div>
+        <div class="table-container">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th data-sort="id">ID Orden ↕</th>
+                <th data-sort="fecha">Fecha ↕</th>
+                <th data-sort="region">Región ↕</th>
+                <th data-sort="categoria">Categoría ↕</th>
+                <th data-sort="producto">Producto ↕</th>
+                <th data-sort="canal">Canal ↕</th>
+                <th data-sort="unidades" style="text-align:right;">Cant. ↕</th>
+                <th data-sort="ingreso" style="text-align:right;">Ingreso ($) ↕</th>
+                <th data-sort="margen" style="text-align:right;">Margen % ↕</th>
+                <th>Estado</th>
+              </tr>
+            </thead>
+            <tbody id="dataTableBody">
+              <!-- Renderizado dinámicamente con JavaScript -->
+            </tbody>
+          </table>
+        </div>
+        <div class="table-pagination">
+          <span id="tableInfo">Mostrando 0 de 0 registros</span>
+          <div style="display:flex; gap:0.35rem;">
+            <button id="btnPrevPage" class="btn btn-outline btn-sm">Anterior</button>
+            <button id="btnNextPage" class="btn btn-outline btn-sm">Siguiente</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ----------------------------------------------------------------------
+         VISTA 2: ASISTENTE CONSULTOR BI (Virtual Advisor)
+         ---------------------------------------------------------------------- -->
+    <section id="tab-assistant" class="tab-view" role="tabpanel">
+      <div class="view-hero">
+        <div class="view-hero-text">
+          <h2>Asistente Consultor de BI: Preguntas y Consejos</h2>
+          <p>
+            ¿Tienes dudas sobre cómo plantear un análisis, elegir métricas o interpretar resultados? Selecciona una duda frecuente o escribe tu consulta en el chat.
+          </p>
+        </div>
+      </div>
+
+      <div class="assistant-layout">
+        <!-- Barra de Temas Frecuentes -->
+        <div class="questions-sidebar">
+          <h3 style="font-size: 0.95rem; font-weight:700; color:var(--text-muted); text-transform:uppercase;">Temas Guiados</h3>
+
+          <button class="quick-topic-btn active" data-query="diferencia_metrica_kpi">
+            <span>🎯</span> ¿Cuál es la diferencia entre Métrica y KPI?
+          </button>
+          <button class="quick-topic-btn" data-query="ciclo_bi">
+            <span>🔄</span> ¿Cuáles son las 4 fases de un proyecto de BI?
+          </button>
+          <button class="quick-topic-btn" data-query="esquema_estrella">
+            <span>⭐</span> ¿Por qué usar Esquema Estrella en vez de una sola tabla Excel?
+          </button>
+          <button class="quick-topic-btn" data-query="evitar_pastel">
+            <span>🥧</span> ¿Por qué se desaconsejan los gráficos de pastel?
+          </button>
+          <button class="quick-topic-btn" data-query="datos_sucios">
+            <span>🧹</span> ¿Qué hacer cuando los datos vienen con errores o nulos?
+          </button>
+          <button class="quick-topic-btn" data-query="storytelling">
+            <span>🗣️</span> ¿Cómo presentar hallazgos a la directiva (Storytelling)?
+          </button>
+          <button class="quick-topic-btn" data-query="roi_analitica">
+            <span>💡</span> ¿Cómo justificar el valor de negocio de BI?
+          </button>
+        </div>
+
+        <!-- Ventana de Chat Interactivo -->
+        <div class="chat-window">
+          <div class="chat-messages" id="chatMessages">
+            <div class="chat-bubble bot">
+              <div class="bot-header-badge"><span>🤖</span> Asistente BI</div>
+              <p>
+                ¡Hola! Soy tu asistente de <strong>Inteligencia de Negocios</strong>. Te ayudo a transformar datos desordenados en información útil y decisiones estratégicas.
+              </p>
+              <p>
+                Puedes seleccionar cualquiera de las preguntas guiadas a la izquierda, o escribir preguntas como <em>"¿Qué es granularidad?"</em>, <em>"¿Cómo medir el Churn?"</em> o <em>"¿Qué es ETL?"</em> abajo.
+              </p>
+            </div>
+          </div>
+
+          <form id="chatForm" class="chat-input-area">
+            <input type="text" id="chatInput" class="chat-input" placeholder="Pregunta sobre BI, KPIs, modelado o análisis..." autocomplete="off">
+            <button type="submit" class="btn btn-primary">
+              <span>Enviar</span> 🚀
+            </button>
+          </form>
+        </div>
+      </div>
+    </section>
+
+    <!-- ----------------------------------------------------------------------
+         VISTA 3: SELECTOR INTERACTIVO DE GRÁFICOS (Chart Picker)
+         ---------------------------------------------------------------------- -->
+    <section id="tab-picker" class="tab-view" role="tabpanel">
+      <div class="view-hero">
+        <div class="view-hero-text">
+          <h2>Recomendador de Visualizaciones de Datos</h2>
+          <p>
+            Uno de los errores más comunes en BI es usar el gráfico incorrecto, confundiendo a los tomadores de decisiones. Responde a estas dos preguntas y descubre la visualización ideal con sus mejores prácticas.
+          </p>
+        </div>
+      </div>
+
+      <div class="chart-picker-container">
+        <!-- Formulario de Decisión -->
+        <div class="card">
+          <div class="card-header">
+            <h3><span>🧭</span> Paso 1: Define tu objetivo analítico</h3>
+          </div>
+          <div class="card-body">
+            <div class="decision-step">
+              <span class="decision-label">1. ¿Qué deseas comunicar principalmente?</span>
+              <div class="option-cards-grid">
+                <button type="button" class="option-card-btn selected" data-goal="tendencia">
+                  <span class="opt-icon">📈</span>
+                  <span>Tendencia en el Tiempo</span>
+                </button>
+                <button type="button" class="option-card-btn" data-goal="comparacion">
+                  <span class="opt-icon">📊</span>
+                  <span>Comparar Categorías</span>
+                </button>
+                <button type="button" class="option-card-btn" data-goal="composicion">
+                  <span class="opt-icon">🧩</span>
+                  <span>Composición (Partes del Total)</span>
+                </button>
+                <button type="button" class="option-card-btn" data-goal="relacion">
+                  <span class="opt-icon">🔵</span>
+                  <span>Relación / Correlación</span>
+                </button>
+                <button type="button" class="option-card-btn" data-goal="distribucion">
+                  <span class="opt-icon">📶</span>
+                  <span>Distribución de Frecuencias</span>
+                </button>
+              </div>
+            </div>
+
+            <div class="decision-step">
+              <span class="decision-label">2. ¿Cuántas variables o categorías tienes?</span>
+              <div class="option-cards-grid">
+                <button type="button" class="option-card-btn selected" data-vars="pocas">
+                  <span class="opt-icon">🟢</span>
+                  <span>Pocas (2 a 6 elementos)</span>
+                </button>
+                <button type="button" class="option-card-btn" data-vars="muchas">
+                  <span class="opt-icon">🟡</span>
+                  <span>Muchas (&gt; 7 elementos)</span>
+                </button>
+                <button type="button" class="option-card-btn" data-vars="continuas">
+                  <span class="opt-icon">🔵</span>
+                  <span>2 métricas continuas</span>
+                </button>
+              </div>
+            </div>
+
+            <div style="margin-top:1.25rem;">
+              <div style="background:var(--bg-surface-elevated); padding:0.85rem; border-radius:var(--radius-md); font-size:0.85rem; color:var(--text-muted);">
+                💡 <strong>Regla de Oro en BI:</strong> Menos es más. Si un gráfico necesita un instructivo de media página para entenderse, la visualización debe simplificarse.
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Tarjeta de Recomendación Dinámica -->
+        <div class="chart-recommendation-card" id="chartRecCard">
+          <div class="rec-header">
+            <div>
+              <span style="font-size:0.75rem; font-weight:700; text-transform:uppercase; color:var(--text-muted);">Recomendación Sugerida</span>
+              <div class="rec-chart-name" id="recChartName">Gráfico de Líneas Continuas</div>
+            </div>
+            <span class="badge badge-primary" id="recBadgeTag">Evolución Temporal</span>
+          </div>
+
+          <div class="rec-preview-box" id="recPreviewContainer">
+            <!-- Mini SVG preview generado dinámicamente -->
+          </div>
+
+          <p id="recDescription" style="font-size:0.92rem; color:var(--text-main); margin-bottom:1rem; line-height:1.5;">
+            El gráfico de líneas es la herramienta idónea para mostrar cómo una métrica evoluciona en intervalos cronológicos continuos (días, meses, trimestres).
+          </p>
+
+          <div class="rec-details-grid">
+            <div class="rec-box-pros">
+              <strong style="color:var(--success); display:block; margin-bottom:0.25rem;">✅ Cuándo SÍ usarlo:</strong>
+              <span id="recWhenToUse">Para series de tiempo continuas, detectar estacionalidad y tendencias alcistas o bajistas.</span>
+            </div>
+            <div class="rec-box-cons">
+              <strong style="color:var(--danger); display:block; margin-bottom:0.25rem;">❌ Qué Evitar:</strong>
+              <span id="recWhatToAvoid">No usar cuando el eje X no sea cronológico (ej. comparar países con una línea conectada induce al error).</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ----------------------------------------------------------------------
+         VISTA 4: CALCULADORA DE KPIS DE NEGOCIO
+         ---------------------------------------------------------------------- -->
+    <section id="tab-calculators" class="tab-view" role="tabpanel">
+      <div class="view-hero">
+        <div class="view-hero-text">
+          <h2>Calculadora y Laboratorio de Fórmulas de BI</h2>
+          <p>
+            Practica el cálculo de las métricas que todo analista de datos debe dominar. Modifica las variables para ver cómo impactan la salud financiera y operativa de un negocio.
+          </p>
+        </div>
+      </div>
+
+      <div class="kpi-calc-grid">
+        <!-- Calculadora 1: ROI -->
+        <div class="calc-card">
+          <div class="calc-header">
+            <h4><span>💵</span> Retorno sobre la Inversión (ROI)</h4>
+            <p>Mide la rentabilidad generada respecto al capital invertido en una campaña o proyecto.</p>
+            <div class="calc-formula-tag">ROI = ((Ingreso - Costo) / Costo) × 100</div>
+          </div>
+          <div class="calc-form">
+            <div class="form-field">
+              <label for="roiIncome">Ingresos generados ($):</label>
+              <input type="number" id="roiIncome" value="75000" min="0" step="1000">
+            </div>
+            <div class="form-field">
+              <label for="roiCost">Costo o inversión total ($):</label>
+              <input type="number" id="roiCost" value="30000" min="1" step="1000">
+            </div>
+          </div>
+          <div class="calc-result-box">
+            <div class="calc-result-val" id="roiResult">+150.0%</div>
+            <div class="calc-result-status" id="roiStatus" style="color:var(--success);">✅ Retorno Altamente Favorable</div>
+          </div>
+        </div>
+
+        <!-- Calculadora 2: CAC -->
+        <div class="calc-card">
+          <div class="calc-header">
+            <h4><span>👥</span> Costo de Adquisición de Clientes (CAC)</h4>
+            <p>Determina cuánto cuesta a la empresa conseguir un nuevo cliente en un periodo dado.</p>
+            <div class="calc-formula-tag">CAC = Gastos de Mkt y Ventas / Nuevos Clientes</div>
+          </div>
+          <div class="calc-form">
+            <div class="form-field">
+              <label for="cacSpend">Presupuesto Ventas + Marketing ($):</label>
+              <input type="number" id="cacSpend" value="12500" min="0" step="500">
+            </div>
+            <div class="form-field">
+              <label for="cacCustomers">Nuevos clientes captados:</label>
+              <input type="number" id="cacCustomers" value="250" min="1" step="10">
+            </div>
+          </div>
+          <div class="calc-result-box">
+            <div class="calc-result-val" id="cacResult">$50.00 / cliente</div>
+            <div class="calc-result-status" id="cacStatus" style="color:var(--info);">ℹ️ Requiere comparar con el LTV</div>
+          </div>
+        </div>
+
+        <!-- Calculadora 3: Churn Rate -->
+        <div class="calc-card">
+          <div class="calc-header">
+            <h4><span>📉</span> Tasa de Cancelación (Churn Rate)</h4>
+            <p>Porcentaje de suscriptores o clientes que abandonaron el servicio en el mes o año.</p>
+            <div class="calc-formula-tag">Churn % = (Bajas del periodo / Clientes iniciales) × 100</div>
+          </div>
+          <div class="calc-form">
+            <div class="form-field">
+              <label for="churnLost">Clientes perdidos / dados de baja:</label>
+              <input type="number" id="churnLost" value="45" min="0" step="5">
+            </div>
+            <div class="form-field">
+              <label for="churnInitial">Clientes al inicio del mes:</label>
+              <input type="number" id="churnInitial" value="1200" min="1" step="50">
+            </div>
+          </div>
+          <div class="calc-result-box">
+            <div class="calc-result-val" id="churnResult">3.75%</div>
+            <div class="calc-result-status" id="churnStatus" style="color:var(--success);">✅ Tasa de retención controlada (&lt; 5%)</div>
+          </div>
+        </div>
+
+        <!-- Calculadora 4: Margen Bruto % -->
+        <div class="calc-card">
+          <div class="calc-header">
+            <h4><span>📊</span> Margen de Ganancia Bruta %</h4>
+            <p>Porcentaje de cada dólar facturado que la empresa retiene tras cubrir el costo de ventas.</p>
+            <div class="calc-formula-tag">Margen % = ((Ventas - COGS) / Ventas) × 100</div>
+          </div>
+          <div class="calc-form">
+            <div class="form-field">
+              <label for="marginSales">Ventas Totales ($):</label>
+              <input type="number" id="marginSales" value="180000" min="1" step="5000">
+            </div>
+            <div class="form-field">
+              <label for="marginCogs">Costo de lo Vendido (COGS) ($):</label>
+              <input type="number" id="marginCogs" value="108000" min="0" step="5000">
+            </div>
+          </div>
+          <div class="calc-result-box">
+            <div class="calc-result-val" id="marginResult">40.0%</div>
+            <div class="calc-result-status" id="marginStatus" style="color:var(--success);">✅ Margen robusto para retail</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ----------------------------------------------------------------------
+         VISTA 5: RETOS DE ANÁLISIS & EVALUACIÓN (Quiz interactivo)
+         ---------------------------------------------------------------------- -->
+    <section id="tab-quiz" class="tab-view" role="tabpanel">
+      <div class="view-hero">
+        <div class="view-hero-text">
+          <h2>Taller de Casos Prácticos & Autoevaluación</h2>
+          <p>
+            Pon a prueba tu pensamiento analítico resolviendo situaciones reales de negocio. Cada reto incluye explicación pedagógica de acierto o corrección.
+          </p>
+        </div>
+        <button id="btnResetQuiz" class="btn btn-outline btn-sm">
+          <span>🔄</span> Reiniciar Quiz
+        </button>
+      </div>
+
+      <div class="quiz-container">
+        <!-- Marcador de Progreso -->
+        <div class="quiz-score-bar">
+          <div class="score-badge">
+            <span>🏆 Tu Puntuación:</span>
+            <span id="quizScoreNumber" style="color:var(--primary); font-size:1.4rem;">0</span>
+            <span style="color:var(--text-muted); font-size:1rem;">/ 5 aciertos</span>
+          </div>
+          <div id="quizEncouragement" style="font-size:0.9rem; font-weight:600; color:var(--text-muted);">
+            ¡Responde los 5 retos para medir tu nivel!
+          </div>
+        </div>
+
+        <!-- Preguntas / Casos -->
+        <div id="quizQuestionsContainer">
+          <!-- Generado dinámicamente con JS -->
+        </div>
+      </div>
+    </section>
+
+    <!-- ----------------------------------------------------------------------
+         VISTA 6: MODELADO DE DATOS (STAR SCHEMA) & GLOSARIO
+         ---------------------------------------------------------------------- -->
+    <section id="tab-glossary" class="tab-view" role="tabpanel">
+      <div class="view-hero">
+        <div class="view-hero-text">
+          <h2>Modelado Dimensional (Esquema Estrella) & Diccionario BI</h2>
+          <p>
+            Comprende cómo se organizan los datos en un Data Warehouse moderno mediante tablas de Hechos (Fact Tables) y Dimensiones (Dimensions), y consulta términos esenciales.
+          </p>
+        </div>
+      </div>
+
+      <!-- Diagrama Didáctico del Esquema Estrella -->
+      <div class="schema-diagram-card">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:0.75rem;">
+          <h3 style="font-size:1.15rem; font-weight:700;">⭐ Arquitectura de un Esquema Estrella (Star Schema)</h3>
+          <span class="badge badge-primary">Modelado Dimensional</span>
+        </div>
+        <p style="font-size:0.9rem; color:var(--text-muted); margin-bottom:1rem;">
+          En el centro se sitúa la <strong>Tabla de Hechos</strong> con las transacciones y métricas cuantificables (ventas, cantidades, ingresos). A su alrededor se conectan las <strong>Tablas de Dimensión</strong> mediante claves foráneas (FK) que aportan contexto (¿Quién?, ¿Cuándo?, ¿Dónde?, ¿Qué producto?).
+        </p>
+
+        <div class="schema-grid">
+          <!-- Dimensión 1 -->
+          <div class="schema-table-box">
+            <div class="schema-header dim">
+              <span>Dim_Tiempo</span>
+              <span>Dimensión</span>
+            </div>
+            <div class="schema-fields">
+              <div><span class="pk">PK</span> ID_Tiempo (INT)</div>
+              <div>Fecha (DATE)</div>
+              <div>Mes_Nombre (VARCHAR)</div>
+              <div>Trimestre (VARCHAR)</div>
+              <div>Año (INT)</div>
+              <div>Es_FinDeSemana (BOOL)</div>
+            </div>
+          </div>
+
+          <!-- Centro: Hechos -->
+          <div class="schema-table-box fact-table">
+            <div class="schema-header fact">
+              <span>Fact_Ventas</span>
+              <span>TABLA DE HECHOS</span>
+            </div>
+            <div class="schema-fields">
+              <div><span class="pk">PK</span> ID_Venta (INT)</div>
+              <div><span class="fk">FK</span> ID_Tiempo ➡️</div>
+              <div><span class="fk">FK</span> ID_Producto ➡️</div>
+              <div><span class="fk">FK</span> ID_Cliente ➡️</div>
+              <div><span class="fk">FK</span> ID_Sucursal ➡️</div>
+              <div style="border-top:1px dashed var(--border-color); margin-top:4px; padding-top:4px; color:var(--success); font-weight:bold;">
+                Métrica: Unidades (INT)<br>
+                Métrica: Ingreso ($ USD)<br>
+                Métrica: Costo_Total ($ USD)
+              </div>
+            </div>
+          </div>
+
+          <!-- Dimensión 2 -->
+          <div class="schema-table-box">
+            <div class="schema-header dim">
+              <span>Dim_Producto</span>
+              <span>Dimensión</span>
+            </div>
+            <div class="schema-fields">
+              <div><span class="pk">PK</span> ID_Producto (INT)</div>
+              <div>Nombre_Producto (VARCHAR)</div>
+              <div>Categoria (VARCHAR)</div>
+              <div>Subcategoria (VARCHAR)</div>
+              <div>Precio_Unitario (DECIMAL)</div>
+              <div>Proveedor (VARCHAR)</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Buscador de Términos del Glosario -->
+      <div class="glossary-search-bar">
+        <input type="text" id="glossarySearch" class="glossary-input" placeholder="🔍 Buscar término: ETL, Drill-down, DAX, Fact Table, Granularidad...">
+      </div>
+
+      <!-- Tarjetas del Glosario -->
+      <div class="glossary-cards-grid" id="glossaryGrid">
+        <!-- Renderizado dinámicamente con JS -->
+      </div>
+    </section>
+
+  </main>
+
+  <!-- ==========================================================================
+       MODAL DE REPORTE EJECUTIVO DE BI
+       ========================================================================== -->
+  <div id="reportModal" class="modal-overlay" role="dialog" aria-modal="true" aria-labelledby="modalReportTitle">
+    <div class="modal-dialog">
+      <div class="modal-header">
+        <h3 id="modalReportTitle" style="display:flex; align-items:center; gap:0.5rem; font-size:1.15rem; font-weight:700;">
+          <span>📄</span> Resumen Ejecutivo de Inteligencia de Negocios
+        </h3>
+        <button id="btnCloseModal" style="background:transparent; border:none; font-size:1.4rem; cursor:pointer; color:var(--text-muted);">&times;</button>
+      </div>
+      <div class="modal-body" id="reportContent">
+        <!-- Contenido generado dinámicamente -->
+      </div>
+      <div class="modal-footer">
+        <button id="btnCopyReport" class="btn btn-outline btn-sm">📋 Copiar al Portapapeles</button>
+        <button id="btnPrintReport" class="btn btn-primary btn-sm">🖨️ Imprimir / Guardar PDF</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- PIE DE PÁGINA -->
+  <footer class="app-footer">
+    <p>
+      <strong>Mi asistente de Inteligencia de Negocios</strong> • Herramienta educativa interactiva para principiantes en BI y análisis de datos.
+    </p>
+    <p style="margin-top:0.35rem; font-size:0.78rem; opacity:0.8;">
+      Diseñado para ejecutarse 100% en local sin servidores externos • Compatible con todos los navegadores modernos.
+    </p>
+  </footer>
+
+  <!-- ==========================================================================
+       JAVASCRIPT AUTOCONTENIDO (Lógica interactiva, Cálculos, Motor SVG, etc.)
+       ========================================================================== -->
+  <script>
+    (function () {
+      "use strict";
+
+      /* ========================================================================
+         1. BASE DE DATOS MUESTRA DE NEGOCIO (Dataset representativo y estructurado)
+         ======================================================================== */
+      const RAW_TRANSACTIONS = [
+        { id: "TX-1001", fecha: "2026-01-14", mes: "Ene", q: "Q1", region: "Norte", categoria: "Tecnología", producto: "Laptop Pro 15", canal: "Directo", unidades: 12, ingreso: 18000, costo: 12600, estado: "Completado" },
+        { id: "TX-1002", fecha: "2026-01-22", mes: "Ene", q: "Q1", region: "Centro", categoria: "Mobiliario", producto: "Silla Ergonómica", canal: "Web", unidades: 45, ingreso: 9000, costo: 5400, estado: "Completado" },
+        { id: "TX-1003", fecha: "2026-02-05", mes: "Feb", q: "Q1", region: "Sur", categoria: "Software", producto: "Licencia Cloud BI", canal: "Directo", unidades: 20, ingreso: 14000, costo: 4200, estado: "Completado" },
+        { id: "TX-1004", fecha: "2026-02-18", mes: "Feb", q: "Q1", region: "Occidente", categoria: "Papelería", producto: "Kit Papel Premium", canal: "B2B", unidades: 150, ingreso: 4500, costo: 3150, estado: "Completado" },
+        { id: "TX-1005", fecha: "2026-03-10", mes: "Mar", q: "Q1", region: "Norte", categoria: "Tecnología", producto: "Monitor 4K 27\"", canal: "Web", unidades: 30, ingreso: 13500, costo: 9450, estado: "Completado" },
+        { id: "TX-1006", fecha: "2026-03-25", mes: "Mar", q: "Q1", region: "Centro", categoria: "Software", producto: "ERP Pyme Anual", canal: "B2B", unidades: 8, ingreso: 19200, costo: 5760, estado: "Completado" },
+        
+        { id: "TX-1007", fecha: "2026-04-08", mes: "Abr", q: "Q2", region: "Occidente", categoria: "Mobiliario", producto: "Escritorio Elevable", canal: "Directo", unidades: 25, ingreso: 12500, costo: 8125, estado: "Completado" },
+        { id: "TX-1008", fecha: "2026-04-20", mes: "Abr", q: "Q2", region: "Sur", categoria: "Tecnología", producto: "Teclado Mecánico Pro", canal: "Web", unidades: 85, ingreso: 7650, costo: 4590, estado: "Completado" },
+        { id: "TX-1009", fecha: "2026-05-12", mes: "May", q: "Q2", region: "Norte", categoria: "Software", producto: "Antivirus Endpoint", canal: "B2B", unidades: 50, ingreso: 10000, costo: 3000, estado: "Completado" },
+        { id: "TX-1010", fecha: "2026-05-29", mes: "May", q: "Q2", region: "Centro", categoria: "Papelería", producto: "Tóner Láser Negro", canal: "Web", unidades: 60, ingreso: 6000, costo: 4200, estado: "Completado" },
+        { id: "TX-1011", fecha: "2026-06-14", mes: "Jun", q: "Q2", region: "Occidente", categoria: "Tecnología", producto: "Laptop Pro 15", canal: "Directo", unidades: 16, ingreso: 24000, costo: 16800, estado: "Completado" },
+        { id: "TX-1012", fecha: "2026-06-28", mes: "Jun", q: "Q2", region: "Sur", categoria: "Mobiliario", producto: "Archivador Metálico", canal: "B2B", unidades: 35, ingreso: 7000, costo: 4900, estado: "Completado" },
+
+        { id: "TX-1013", fecha: "2026-07-07", mes: "Jul", q: "Q3", region: "Norte", categoria: "Software", producto: "Licencia Cloud BI", canal: "Web", unidades: 32, ingreso: 22400, costo: 6720, estado: "Completado" },
+        { id: "TX-1014", fecha: "2026-07-22", mes: "Jul", q: "Q3", region: "Centro", categoria: "Tecnología", producto: "Docking Station USB-C", canal: "Directo", unidades: 40, ingreso: 8000, costo: 5200, estado: "Completado" },
+        { id: "TX-1015", fecha: "2026-08-11", mes: "Ago", q: "Q3", region: "Occidente", categoria: "Papelería", producto: "Cajas Archivo Legajo", canal: "Web", unidades: 120, ingreso: 3600, costo: 2340, estado: "Completado" },
+        { id: "TX-1016", fecha: "2026-08-27", mes: "Ago", q: "Q3", region: "Sur", categoria: "Software", producto: "ERP Pyme Anual", canal: "B2B", unidades: 10, ingreso: 24000, costo: 7200, estado: "Completado" },
+        { id: "TX-1017", fecha: "2026-09-09", mes: "Sep", q: "Q3", region: "Norte", categoria: "Mobiliario", producto: "Silla Ergonómica", canal: "Directo", unidades: 38, ingreso: 7600, costo: 4560, estado: "Completado" },
+        { id: "TX-1018", fecha: "2026-09-24", mes: "Sep", q: "Q3", region: "Centro", categoria: "Tecnología", producto: "Monitor 4K 27\"", canal: "Web", unidades: 26, ingreso: 11700, costo: 8190, estado: "Completado" },
+
+        { id: "TX-1019", fecha: "2026-10-06", mes: "Oct", q: "Q4", region: "Sur", categoria: "Tecnología", producto: "Laptop Pro 15", canal: "B2B", unidades: 18, ingreso: 27000, costo: 18900, estado: "Completado" },
+        { id: "TX-1020", fecha: "2026-10-19", mes: "Oct", q: "Q4", region: "Occidente", categoria: "Software", producto: "Licencia Cloud BI", canal: "Directo", unidades: 25, ingreso: 17500, costo: 5250, estado: "Completado" },
+        { id: "TX-1021", fecha: "2026-11-04", mes: "Nov", q: "Q4", region: "Centro", categoria: "Mobiliario", producto: "Escritorio Elevable", canal: "Web", unidades: 32, ingreso: 16000, costo: 10400, estado: "Completado" },
+        { id: "TX-1022", fecha: "2026-11-18", mes: "Nov", q: "Q4", region: "Norte", categoria: "Papelería", producto: "Tóner Láser Negro", canal: "Directo", unidades: 90, ingreso: 9000, costo: 6300, estado: "Completado" },
+        { id: "TX-1023", fecha: "2026-12-08", mes: "Dic", q: "Q4", region: "Occidente", categoria: "Tecnología", producto: "Monitor 4K 27\"", canal: "B2B", unidades: 44, ingreso: 19800, costo: 13860, estado: "Completado" },
+        { id: "TX-1024", fecha: "2026-12-20", mes: "Dic", q: "Q4", region: "Sur", categoria: "Software", producto: "ERP Pyme Anual", canal: "Directo", unidades: 12, ingreso: 28800, costo: 8640, estado: "Completado" }
+      ];
+
+      /* ========================================================================
+         2. GESTIÓN DE TEMA (CLARO / OSCURO)
+         ======================================================================== */
+      const themeToggleBtn = document.getElementById("themeToggleBtn");
+      const themeIcon = document.getElementById("themeIcon");
+      const themeText = document.getElementById("themeText");
+
+      function setTheme(isDark) {
+        if (isDark) {
+          document.documentElement.setAttribute("data-theme", "dark");
+          themeIcon.textContent = "☀️";
+          themeText.textContent = "Modo Claro";
+        } else {
+          document.documentElement.removeAttribute("data-theme");
+          themeIcon.textContent = "🌙";
+          themeText.textContent = "Modo Oscuro";
+        }
+      }
+
+      themeToggleBtn.addEventListener("click", () => {
+        const isDark = document.documentElement.getAttribute("data-theme") === "dark";
+        setTheme(!isDark);
+        renderAllCharts(); // Re-renderizar gráficos con colores de tema
+      });
+
+      /* ========================================================================
+         3. GESTIÓN DE PESTAÑAS (TABS)
+         ======================================================================== */
+      const navButtons = document.querySelectorAll(".nav-tab-btn");
+      const tabViews = document.querySelectorAll(".tab-view");
+
+      navButtons.forEach(btn => {
+        btn.addEventListener("click", () => {
+          const targetTab = btn.getAttribute("data-tab");
+
+          navButtons.forEach(b => {
+            b.classList.remove("active");
+            b.setAttribute("aria-selected", "false");
+          });
+          tabViews.forEach(v => v.classList.remove("active"));
+
+          btn.classList.add("active");
+          btn.setAttribute("aria-selected", "true");
+          const activeView = document.getElementById(targetTab);
+          if (activeView) {
+            activeView.classList.add("active");
+          }
+
+          if (targetTab === "tab-dashboard") {
+            setTimeout(renderAllCharts, 50);
+          }
+        });
+      });
+
+      /* ========================================================================
+         4. LÓGICA DEL DASHBOARD DE BI (Filtros, Cálculos de KPIs y Tabla)
+         ======================================================================== */
+      const filterRegion = document.getElementById("filterRegion");
+      const filterCategory = document.getElementById("filterCategory");
+      const filterQuarter = document.getElementById("filterQuarter");
+      const btnResetFilters = document.getElementById("btnResetFilters");
+      const tableSearch = document.getElementById("tableSearch");
+
+      let currentFilteredData = [...RAW_TRANSACTIONS];
+      let tableSortKey = "fecha";
+      let tableSortAsc = false;
+      let currentPage = 1;
+      const pageSize = 8;
+
+      function applyFilters() {
+        const selRegion = filterRegion.value;
+        const selCat = filterCategory.value;
+        const selQ = filterQuarter.value;
+        const searchVal = tableSearch.value.trim().toLowerCase();
+
+        currentFilteredData = RAW_TRANSACTIONS.filter(item => {
+          if (selRegion !== "ALL" && item.region !== selRegion) return false;
+          if (selCat !== "ALL" && item.categoria !== selCat) return false;
+          if (selQ !== "ALL" && item.q !== selQ) return false;
+
+          if (searchVal) {
+            const matchTxt = `${item.id} ${item.producto} ${item.categoria} ${item.region} ${item.canal}`.toLowerCase();
+            if (!matchTxt.includes(searchVal)) return false;
+          }
+          return true;
+        });
+
+        currentPage = 1;
+        updateKpis();
+        renderAllCharts();
+        renderTable();
+      }
+
+      function updateKpis() {
+        const totalRevenue = currentFilteredData.reduce((acc, i) => acc + i.ingreso, 0);
+        const totalCost = currentFilteredData.reduce((acc, i) => acc + i.costo, 0);
+        const totalOrders = currentFilteredData.length;
+        const grossProfit = totalRevenue - totalCost;
+        const marginPct = totalRevenue > 0 ? (grossProfit / totalRevenue) * 100 : 0;
+        const aov = totalOrders > 0 ? totalRevenue / totalOrders : 0;
+
+        document.getElementById("kpiRevenue").textContent = `$${totalRevenue.toLocaleString("es-MX")}`;
+        document.getElementById("kpiMargin").textContent = `${marginPct.toFixed(1)}%`;
+        document.getElementById("kpiAOV").textContent = `$${Math.round(aov).toLocaleString("es-MX")}`;
+        document.getElementById("kpiOrders").textContent = totalOrders.toString();
+
+        const marginTrend = document.getElementById("kpiMarginTrend");
+        if (marginPct >= 35) {
+          marginTrend.className = "kpi-trend positive";
+          marginTrend.innerHTML = `<span>▲ Excelente</span> (${grossProfit > 0 ? '+$' + grossProfit.toLocaleString("es-MX") : '$0'})`;
+        } else if (marginPct >= 20) {
+          marginTrend.className = "kpi-trend neutral";
+          marginTrend.innerHTML = `<span>● Aceptable</span> (${grossProfit > 0 ? '+$' + grossProfit.toLocaleString("es-MX") : '$0'})`;
+        } else {
+          marginTrend.className = "kpi-trend warning";
+          marginTrend.innerHTML = `<span>⚠️ Margen Bajo</span> (Revisar costos)`;
+        }
+      }
+
+      // Ordenar y renderizar la tabla
+      function renderTable() {
+        const sortedData = [...currentFilteredData].sort((a, b) => {
+          let vA = a[tableSortKey];
+          let vB = b[tableSortKey];
+
+          if (tableSortKey === "margen") {
+            vA = ((a.ingreso - a.costo) / a.ingreso);
+            vB = ((b.ingreso - b.costo) / b.ingreso);
+          }
+
+          if (typeof vA === "string") {
+            return tableSortAsc ? vA.localeCompare(vB) : vB.localeCompare(vA);
+          }
+          return tableSortAsc ? vA - vB : vB - vA;
+        });
+
+        const totalRecords = sortedData.length;
+        const totalPages = Math.ceil(totalRecords / pageSize) || 1;
+        if (currentPage > totalPages) currentPage = totalPages;
+
+        const startIdx = (currentPage - 1) * pageSize;
+        const pageItems = sortedData.slice(startIdx, startIdx + pageSize);
+
+        const tbody = document.getElementById("dataTableBody");
+        tbody.innerHTML = "";
+
+        if (pageItems.length === 0) {
+          tbody.innerHTML = `<tr><td colspan="10" style="text-align:center; padding:2rem; color:var(--text-muted);">No se encontraron transacciones con los filtros seleccionados.</td></tr>`;
+        } else {
+          pageItems.forEach(item => {
+            const profit = item.ingreso - item.costo;
+            const margin = ((profit / item.ingreso) * 100).toFixed(1);
+
+            const tr = document.createElement("tr");
+            tr.innerHTML = `
+              <td><strong>${item.id}</strong></td>
+              <td>${item.fecha}</td>
+              <td><span class="badge badge-info">${item.region}</span></td>
+              <td>${item.categoria}</td>
+              <td>${item.producto}</td>
+              <td>${item.canal}</td>
+              <td style="text-align:right;">${item.unidades}</td>
+              <td style="text-align:right; font-weight:700;">$${item.ingreso.toLocaleString("es-MX")}</td>
+              <td style="text-align:right; color:${margin >= 40 ? 'var(--success)' : 'var(--text-main)'}; font-weight:600;">${margin}%</td>
+              <td><span class="badge badge-success">${item.estado}</span></td>
+            `;
+            tbody.appendChild(tr);
+          });
+        }
+
+        document.getElementById("tableInfo").textContent = `Mostrando ${totalRecords > 0 ? startIdx + 1 : 0} a ${Math.min(startIdx + pageSize, totalRecords)} de ${totalRecords} transacciones`;
+      }
+
+      // Eventos de Filtro y Tabla
+      [filterRegion, filterCategory, filterQuarter].forEach(elem => {
+        elem.addEventListener("change", applyFilters);
+      });
+
+      tableSearch.addEventListener("input", () => {
+        applyFilters();
+      });
+
+      btnResetFilters.addEventListener("click", () => {
+        filterRegion.value = "ALL";
+        filterCategory.value = "ALL";
+        filterQuarter.value = "ALL";
+        tableSearch.value = "";
+        applyFilters();
+      });
+
+      document.querySelectorAll(".data-table th[data-sort]").forEach(th => {
+        th.addEventListener("click", () => {
+          const key = th.getAttribute("data-sort");
+          if (tableSortKey === key) {
+            tableSortAsc = !tableSortAsc;
+          } else {
+            tableSortKey = key;
+            tableSortAsc = true;
+          }
+          renderTable();
+        });
+      });
+
+      document.getElementById("btnPrevPage").addEventListener("click", () => {
+        if (currentPage > 1) {
+          currentPage--;
+          renderTable();
+        }
+      });
+
+      document.getElementById("btnNextPage").addEventListener("click", () => {
+        const totalPages = Math.ceil(currentFilteredData.length / pageSize);
+        if (currentPage < totalPages) {
+          currentPage++;
+          renderTable();
+        }
+      });
+
+      // Exportar CSV
+      document.getElementById("btnExportCSV").addEventListener("click", () => {
+        const headers = ["ID", "Fecha", "Mes", "Trimestre", "Region", "Categoria", "Producto", "Canal", "Unidades", "Ingreso", "Costo", "Ganancia", "Margen_Pct", "Estado"];
+        const rows = currentFilteredData.map(d => {
+          const profit = d.ingreso - d.costo;
+          const margin = ((profit / d.ingreso) * 100).toFixed(2);
+          return [d.id, d.fecha, d.mes, d.q, d.region, `"${d.categoria}"`, `"${d.producto}"`, d.canal, d.unidades, d.ingreso, d.costo, profit, margin, d.estado].join(",");
+        });
+
+        const csvContent = "data:text/csv;charset=utf-8," + [headers.join(","), ...rows].join("\n");
+        const encodedUri = encodeURI(csvContent);
+        const link = document.createElement("a");
+        link.setAttribute("href", encodedUri);
+        link.setAttribute("download", `reporte_bi_transacciones_${new Date().toISOString().slice(0, 10)}.csv`);
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+      });
+
+      /* ========================================================================
+         5. MOTOR GRÁFICO SVG NATIVO (100% Offline, interactivo con tooltips)
+         ======================================================================== */
+      function renderAllCharts() {
+        renderLineChart();
+        renderBarChart();
+        renderDonutChart();
+        renderChannelChart();
+      }
+
+      // 5.1 Gráfico de Línea de Tiempo Mensual
+      function renderLineChart() {
+        const svg = document.getElementById("svgLineChart");
+        const tooltip = document.getElementById("lineTooltip");
+        svg.innerHTML = "";
+
+        const months = ["Ene", "Feb", "Mar", "Abr", "May", "Jun", "Jul", "Ago", "Sep", "Oct", "Nov", "Dic"];
+        const monthTotals = months.map(m => {
+          const items = currentFilteredData.filter(d => d.mes === m);
+          const rev = items.reduce((a, b) => a + b.ingreso, 0);
+          const profit = items.reduce((a, b) => a + (b.ingreso - b.costo), 0);
+          return { mes: m, rev, profit };
+        });
+
+        const maxVal = Math.max(...monthTotals.map(m => Math.max(m.rev, m.profit)), 1000);
+        const W = 540, H = 240;
+        const padX = 45, padY = 30;
+        const plotW = W - padX * 2;
+        const plotH = H - padY * 2;
+
+        const isDark = document.documentElement.getAttribute("data-theme") === "dark";
+        const gridColor = isDark ? "#27354f" : "#e2e8f0";
+        const textColor = isDark ? "#94a3b8" : "#64748b";
+
+        // Líneas guía horizontales
+        for (let i = 0; i <= 4; i++) {
+          const y = padY + (plotH / 4) * i;
+          const val = Math.round(maxVal - (maxVal / 4) * i);
+          
+          const line = document.createElementNS("http://www.w3.org/2000/svg", "line");
+          line.setAttribute("x1", padX);
+          line.setAttribute("y1", y);
+          line.setAttribute("x2", W - padX);
+          line.setAttribute("y2", y);
+          line.setAttribute("stroke", gridColor);
+          line.setAttribute("stroke-width", "1");
+          line.setAttribute("stroke-dasharray", i === 4 ? "0" : "3,3");
+          svg.appendChild(line);
+
+          const txt = document.createElementNS("http://www.w3.org/2000/svg", "text");
+          txt.setAttribute("x", padX - 8);
+          txt.setAttribute("y", y + 4);
+          txt.setAttribute("text-anchor", "end");
+          txt.setAttribute("fill", textColor);
+          txt.setAttribute("font-size", "10");
+          txt.textContent = `$${(val / 1000).toFixed(0)}k`;
+          svg.appendChild(txt);
+        }
+
+        // Puntos y caminos
+        const stepX = plotW / (months.length - 1);
+        let pathRevD = "";
+        let pathProfitD = "";
+
+        const pointsRev = [];
+        const pointsProfit = [];
+
+        monthTotals.forEach((d, idx) => {
+          const x = padX + idx * stepX;
+          const yRev = padY + plotH - (d.rev / maxVal) * plotH;
+          const yProfit = padY + plotH - (d.profit / maxVal) * plotH;
+
+          pointsRev.push({ x, y: yRev, mes: d.mes, val: d.rev });
+          pointsProfit.push({ x, y: yProfit, mes: d.mes, val: d.profit });
+
+          pathRevD += (idx === 0 ? `M ${x} ${yRev}` : ` L ${x} ${yRev}`);
+          pathProfitD += (idx === 0 ? `M ${x} ${yProfit}` : ` L ${x} ${yProfit}`);
+
+          // Etiqueta del mes
+          const txtMes = document.createElementNS("http://www.w3.org/2000/svg", "text");
+          txtMes.setAttribute("x", x);
+          txtMes.setAttribute("y", H - 10);
+          txtMes.setAttribute("text-anchor", "middle");
+          txtMes.setAttribute("fill", textColor);
+          txtMes.setAttribute("font-size", "10");
+          txtMes.textContent = d.mes;
+          svg.appendChild(txtMes);
+        });
+
+        // Dibujar trazo de Revenue
+        const pathRev = document.createElementNS("http://www.w3.org/2000/svg", "path");
+        pathRev.setAttribute("d", pathRevD);
+        pathRev.setAttribute("fill", "none");
+        pathRev.setAttribute("stroke", "#2563eb");
+        pathRev.setAttribute("stroke-width", "3");
+        pathRev.setAttribute("stroke-linecap", "round");
+        svg.appendChild(pathRev);
+
+        // Dibujar trazo de Profit
+        const pathProfit = document.createElementNS("http://www.w3.org/2000/svg", "path");
+        pathProfit.setAttribute("d", pathProfitD);
+        pathProfit.setAttribute("fill", "none");
+        pathProfit.setAttribute("stroke", "#0d9488");
+        pathProfit.setAttribute("stroke-width", "2.5");
+        pathProfit.setAttribute("stroke-linecap", "round");
+        svg.appendChild(pathProfit);
+
+        // Círculos interactivos
+        pointsRev.forEach(p => {
+          const circle = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+          circle.setAttribute("cx", p.x);
+          circle.setAttribute("cy", p.y);
+          circle.setAttribute("r", "4.5");
+          circle.setAttribute("fill", "#2563eb");
+          circle.setAttribute("stroke", "#ffffff");
+          circle.setAttribute("stroke-width", "2");
+          circle.style.cursor = "pointer";
+
+          circle.addEventListener("mouseenter", (e) => {
+            circle.setAttribute("r", "7");
+            tooltip.style.opacity = "1";
+            tooltip.innerHTML = `<strong>${p.mes} (Ingreso):</strong> $${p.val.toLocaleString("es-MX")}`;
+            const boxRect = svg.getBoundingClientRect();
+            tooltip.style.left = `${(p.x / W) * 100}%`;
+            tooltip.style.top = `${(p.y / H) * 100}%`;
+          });
+
+          circle.addEventListener("mouseleave", () => {
+            circle.setAttribute("r", "4.5");
+            tooltip.style.opacity = "0";
+          });
+
+          svg.appendChild(circle);
+        });
+
+        pointsProfit.forEach(p => {
+          const circle = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+          circle.setAttribute("cx", p.x);
+          circle.setAttribute("cy", p.y);
+          circle.setAttribute("r", "4");
+          circle.setAttribute("fill", "#0d9488");
+          circle.setAttribute("stroke", "#ffffff");
+          circle.setAttribute("stroke-width", "1.5");
+          circle.style.cursor = "pointer";
+
+          circle.addEventListener("mouseenter", () => {
+            circle.setAttribute("r", "6.5");
+            tooltip.style.opacity = "1";
+            tooltip.innerHTML = `<strong>${p.mes} (Ganancia Neta):</strong> $${p.val.toLocaleString("es-MX")}`;
+            tooltip.style.left = `${(p.x / W) * 100}%`;
+            tooltip.style.top = `${(p.y / H) * 100}%`;
+          });
+
+          circle.addEventListener("mouseleave", () => {
+            circle.setAttribute("r", "4");
+            tooltip.style.opacity = "0";
+          });
+
+          svg.appendChild(circle);
+        });
+      }
+
+      // 5.2 Gráfico de Barras por Categoría
+      function renderBarChart() {
+        const svg = document.getElementById("svgBarChart");
+        const tooltip = document.getElementById("barTooltip");
+        svg.innerHTML = "";
+
+        const cats = ["Tecnología", "Software", "Mobiliario", "Papelería"];
+        const catStats = cats.map(c => {
+          const items = currentFilteredData.filter(d => d.categoria === c);
+          const rev = items.reduce((a, b) => a + b.ingreso, 0);
+          const cost = items.reduce((a, b) => a + b.costo, 0);
+          const margin = rev > 0 ? ((rev - cost) / rev) * 100 : 0;
+          return { cat: c, rev, margin };
+        });
+
+        const maxRev = Math.max(...catStats.map(c => c.rev), 5000);
+        const W = 540, H = 240;
+        const padLeft = 90, padRight = 35, padY = 25;
+        const plotW = W - padLeft - padRight;
+        const rowHeight = (H - padY * 2) / cats.length;
+
+        const isDark = document.documentElement.getAttribute("data-theme") === "dark";
+        const textColor = isDark ? "#cbd5e1" : "#475569";
+        const barBgColor = isDark ? "rgba(255,255,255,0.05)" : "rgba(0,0,0,0.03)";
+
+        catStats.forEach((d, idx) => {
+          const y = padY + idx * rowHeight;
+          const barWidth = maxRev > 0 ? (d.rev / maxRev) * plotW : 0;
+
+          // Fondo de la barra
+          const bgBar = document.createElementNS("http://www.w3.org/2000/svg", "rect");
+          bgBar.setAttribute("x", padLeft);
+          bgBar.setAttribute("y", y + 6);
+          bgBar.setAttribute("width", plotW);
+          bgBar.setAttribute("height", rowHeight - 16);
+          bgBar.setAttribute("fill", barBgColor);
+          bgBar.setAttribute("rx", "4");
+          svg.appendChild(bgBar);
+
+          // Barra de Revenue
+          const bar = document.createElementNS("http://www.w3.org/2000/svg", "rect");
+          bar.setAttribute("x", padLeft);
+          bar.setAttribute("y", y + 6);
+          bar.setAttribute("width", barWidth);
+          bar.setAttribute("height", rowHeight - 16);
+          bar.setAttribute("fill", "#3b82f6");
+          bar.setAttribute("rx", "4");
+          bar.style.cursor = "pointer";
+
+          bar.addEventListener("mouseenter", () => {
+            bar.setAttribute("fill", "#2563eb");
+            tooltip.style.opacity = "1";
+            tooltip.innerHTML = `<strong>${d.cat}</strong><br>Ventas: $${d.rev.toLocaleString("es-MX")}<br>Margen: ${d.margin.toFixed(1)}%`;
+            tooltip.style.left = `${((padLeft + barWidth / 2) / W) * 100}%`;
+            tooltip.style.top = `${((y + 14) / H) * 100}%`;
+          });
+
+          bar.addEventListener("mouseleave", () => {
+            bar.setAttribute("fill", "#3b82f6");
+            tooltip.style.opacity = "0";
+          });
+
+          svg.appendChild(bar);
+
+          // Nombre de la categoría
+          const lbl = document.createElementNS("http://www.w3.org/2000/svg", "text");
+          lbl.setAttribute("x", padLeft - 10);
+          lbl.setAttribute("y", y + rowHeight / 2);
+          lbl.setAttribute("text-anchor", "end");
+          lbl.setAttribute("dominant-baseline", "middle");
+          lbl.setAttribute("fill", textColor);
+          lbl.setAttribute("font-size", "11");
+          lbl.setAttribute("font-weight", "600");
+          lbl.textContent = d.cat;
+          svg.appendChild(lbl);
+
+          // Valor monetario al final de la barra
+          const valTxt = document.createElementNS("http://www.w3.org/2000/svg", "text");
+          valTxt.setAttribute("x", padLeft + barWidth + 8);
+          valTxt.setAttribute("y", y + rowHeight / 2);
+          valTxt.setAttribute("dominant-baseline", "middle");
+          valTxt.setAttribute("fill", textColor);
+          valTxt.setAttribute("font-size", "11");
+          valTxt.setAttribute("font-weight", "700");
+          valTxt.textContent = `$${(d.rev / 1000).toFixed(1)}k (${d.margin.toFixed(0)}%)`;
+          svg.appendChild(valTxt);
+        });
+      }
+
+      // 5.3 Gráfico Donut de Participación Regional
+      function renderDonutChart() {
+        const svg = document.getElementById("svgDonutChart");
+        const tooltip = document.getElementById("donutTooltip");
+        const legend = document.getElementById("donutLegend");
+        svg.innerHTML = "";
+        legend.innerHTML = "";
+
+        const regions = [
+          { name: "Norte", color: "#3b82f6" },
+          { name: "Centro", color: "#10b981" },
+          { name: "Sur", color: "#f59e0b" },
+          { name: "Occidente", color: "#8b5cf6" }
+        ];
+
+        const regTotals = regions.map(r => {
+          const rev = currentFilteredData.filter(d => d.region === r.name).reduce((a, b) => a + b.ingreso, 0);
+          return { ...r, rev };
+        });
+
+        const totalRev = regTotals.reduce((a, b) => a + b.rev, 0);
+        const cx = 270, cy = 110, r = 80, rHole = 50;
+
+        let curAngle = -Math.PI / 2;
+
+        if (totalRev === 0) {
+          const txt = document.createElementNS("http://www.w3.org/2000/svg", "text");
+          txt.setAttribute("x", cx);
+          txt.setAttribute("y", cy);
+          txt.setAttribute("text-anchor", "middle");
+          txt.setAttribute("fill", "var(--text-muted)");
+          txt.setAttribute("font-size", "12");
+          txt.textContent = "Sin datos para esta selección";
+          svg.appendChild(txt);
+          return;
+        }
+
+        regTotals.forEach(item => {
+          const pct = totalRev > 0 ? item.rev / totalRev : 0;
+          const sliceAngle = pct * 2 * Math.PI;
+          const endAngle = curAngle + sliceAngle;
+
+          const x1 = cx + r * Math.cos(curAngle);
+          const y1 = cy + r * Math.sin(curAngle);
+          const x2 = cx + r * Math.cos(endAngle);
+          const y2 = cy + r * Math.sin(endAngle);
+
+          const xHole1 = cx + rHole * Math.cos(endAngle);
+          const yHole1 = cy + rHole * Math.sin(endAngle);
+          const xHole2 = cx + rHole * Math.cos(curAngle);
+          const yHole2 = cy + rHole * Math.sin(curAngle);
+
+          const largeArc = sliceAngle > Math.PI ? 1 : 0;
+
+          const d = `
+            M ${x1} ${y1}
+            A ${r} ${r} 0 ${largeArc} 1 ${x2} ${y2}
+            L ${xHole1} ${yHole1}
+            A ${rHole} ${rHole} 0 ${largeArc} 0 ${xHole2} ${yHole2}
+            Z
+          `;
+
+          const path = document.createElementNS("http://www.w3.org/2000/svg", "path");
+          path.setAttribute("d", d);
+          path.setAttribute("fill", item.color);
+          path.setAttribute("stroke", "var(--bg-surface)");
+          path.setAttribute("stroke-width", "2");
+          path.style.cursor = "pointer";
+
+          path.addEventListener("mouseenter", () => {
+            path.style.opacity = "0.85";
+            tooltip.style.opacity = "1";
+            tooltip.innerHTML = `<strong>Región ${item.name}:</strong><br>$${item.rev.toLocaleString("es-MX")} (${(pct * 100).toFixed(1)}%)`;
+            tooltip.style.left = "50%";
+            tooltip.style.top = "45%";
+          });
+
+          path.addEventListener("mouseleave", () => {
+            path.style.opacity = "1";
+            tooltip.style.opacity = "0";
+          });
+
+          svg.appendChild(path);
+
+          curAngle = endAngle;
+
+          // Leyenda interactiva
+          const legDiv = document.createElement("div");
+          legDiv.className = "legend-item";
+          legDiv.innerHTML = `
+            <span class="legend-color" style="background:${item.color};"></span>
+            <span>${item.name} (${(pct * 100).toFixed(0)}%)</span>
+          `;
+          legend.appendChild(legDiv);
+        });
+
+        // Texto central en el hueco del donut
+        const centerTxt = document.createElementNS("http://www.w3.org/2000/svg", "text");
+        centerTxt.setAttribute("x", cx);
+        centerTxt.setAttribute("y", cy - 4);
+        centerTxt.setAttribute("text-anchor", "middle");
+        centerTxt.setAttribute("fill", "var(--text-main)");
+        centerTxt.setAttribute("font-size", "14");
+        centerTxt.setAttribute("font-weight", "800");
+        centerTxt.textContent = `$${(totalRev / 1000).toFixed(0)}k`;
+        svg.appendChild(centerTxt);
+
+        const subCenterTxt = document.createElementNS("http://www.w3.org/2000/svg", "text");
+        subCenterTxt.setAttribute("x", cx);
+        subCenterTxt.setAttribute("y", cy + 14);
+        subCenterTxt.setAttribute("text-anchor", "middle");
+        subCenterTxt.setAttribute("fill", "var(--text-muted)");
+        subCenterTxt.setAttribute("font-size", "10");
+        subCenterTxt.textContent = "Total Global";
+        svg.appendChild(subCenterTxt);
+      }
+
+      // 5.4 Gráfico de Conversión por Canales (Barras agrupadas / Embudo)
+      function renderChannelChart() {
+        const svg = document.getElementById("svgChannelChart");
+        const tooltip = document.getElementById("channelTooltip");
+        svg.innerHTML = "";
+
+        const channels = [
+          { name: "Directo", color: "#6366f1" },
+          { name: "Web", color: "#ec4899" },
+          { name: "B2B", color: "#f59e0b" }
+        ];
+
+        const chData = channels.map(c => {
+          const items = currentFilteredData.filter(d => d.canal === c.name);
+          const rev = items.reduce((a, b) => a + b.ingreso, 0);
+          const units = items.reduce((a, b) => a + b.unidades, 0);
+          const orders = items.length;
+          return { ...c, rev, units, orders };
+        });
+
+        const maxRev = Math.max(...chData.map(c => c.rev), 5000);
+        const W = 540, H = 240;
+        const padX = 50, padY = 30;
+        const colWidth = (W - padX * 2) / channels.length;
+
+        const isDark = document.documentElement.getAttribute("data-theme") === "dark";
+        const textColor = isDark ? "#94a3b8" : "#64748b";
+
+        chData.forEach((d, idx) => {
+          const xCenter = padX + idx * colWidth + colWidth / 2;
+          const barW = Math.min(colWidth * 0.5, 65);
+          const barH = maxRev > 0 ? (d.rev / maxRev) * (H - padY * 2 - 30) : 0;
+          const y = H - padY - 25 - barH;
+
+          // Barra
+          const bar = document.createElementNS("http://www.w3.org/2000/svg", "rect");
+          bar.setAttribute("x", xCenter - barW / 2);
+          bar.setAttribute("y", y);
+          bar.setAttribute("width", barW);
+          bar.setAttribute("height", barH);
+          bar.setAttribute("fill", d.color);
+          bar.setAttribute("rx", "6");
+          bar.style.cursor = "pointer";
+
+          bar.addEventListener("mouseenter", () => {
+            bar.style.opacity = "0.85";
+            tooltip.style.opacity = "1";
+            tooltip.innerHTML = `<strong>Canal ${d.name}:</strong><br>Ventas: $${d.rev.toLocaleString("es-MX")}<br>Unidades: ${d.units}<br>Transacciones: ${d.orders}`;
+            tooltip.style.left = `${(xCenter / W) * 100}%`;
+            tooltip.style.top = `${(y / H) * 100}%`;
+          });
+
+          bar.addEventListener("mouseleave", () => {
+            bar.style.opacity = "1";
+            tooltip.style.opacity = "0";
+          });
+
+          svg.appendChild(bar);
+
+          // Valor encima de la barra
+          const valTxt = document.createElementNS("http://www.w3.org/2000/svg", "text");
+          valTxt.setAttribute("x", xCenter);
+          valTxt.setAttribute("y", y - 8);
+          valTxt.setAttribute("text-anchor", "middle");
+          valTxt.setAttribute("fill", "var(--text-main)");
+          valTxt.setAttribute("font-size", "11");
+          valTxt.setAttribute("font-weight", "700");
+          valTxt.textContent = `$${(d.rev / 1000).toFixed(1)}k`;
+          svg.appendChild(valTxt);
+
+          // Etiqueta del Canal abajo
+          const lbl = document.createElementNS("http://www.w3.org/2000/svg", "text");
+          lbl.setAttribute("x", xCenter);
+          lbl.setAttribute("y", H - padY);
+          lbl.setAttribute("text-anchor", "middle");
+          lbl.setAttribute("fill", textColor);
+          lbl.setAttribute("font-size", "11");
+          lbl.setAttribute("font-weight", "600");
+          lbl.textContent = d.name;
+          svg.appendChild(lbl);
+        });
+      }
+
+      /* ========================================================================
+         6. ASISTENTE CONSULTOR DE BI (Base de Conocimiento y Chat Guiado)
+         ======================================================================== */
+      const BI_KNOWLEDGE_BASE = {
+        diferencia_metrica_kpi: {
+          title: "¿Cuál es la diferencia entre una Métrica y un KPI?",
+          text: `
+            <p>Es una de las confusiones más comunes en principiantes:</p>
+            <ul>
+              <li><strong>Métrica:</strong> Cualquier dato cuantificable de la empresa (ej. número de clics en la web, horas trabajadas, total de facturas emitidas). Proporciona contexto, pero no necesariamente define el éxito o fracaso estratégico.</li>
+              <li><strong>KPI (Key Performance Indicator):</strong> Es una métrica <em>clave</em> vinculada directamente a un objetivo estratégico específico con una meta y un plazo definido (ej. "Incrementar el margen bruto al 35% en el Q2").</li>
+            </ul>
+            <p>💡 <em>Regla de oro:</em> Todas las KPIs son métricas, pero muy pocas métricas califican como KPIs.</p>
+          `
+        },
+        ciclo_bi: {
+          title: "Las 4 Fases de un Proyecto de Inteligencia de Negocios",
+          text: `
+            <p>Un flujo estándar de BI transforma datos caóticos en acciones rentables:</p>
+            <ol>
+              <li><strong>1. Ingesta y Extracción (E):</strong> Conectar fuentes dispersas (ERP, bases SQL, archivos Excel, APIs de CRM).</li>
+              <li><strong>2. Transformación y Limpieza (T):</strong> Manejo de duplicados, datos faltantes, estandarización de fechas y cálculo de columnas clave.</li>
+              <li><strong>3. Modelado Dimensional (L):</strong> Creación de esquemas (ej. Esquema Estrella) con tablas de Hechos y Dimensiones para optimizar consultas rápidas.</li>
+              <li><strong>4. Visualización y Acción:</strong> Diseño de tableros ejecutivos con alertas para que los líderes tomen decisiones oportunas.</li>
+            </ol>
+          `
+        },
+        esquema_estrella: {
+          title: "¿Por qué usar Esquema Estrella en vez de una gran tabla plana de Excel?",
+          text: `
+            <p>Tener un millón de filas en un solo archivo con nombres repetidos causa lentitud, inconsistencia y fallas de integridad:</p>
+            <ul>
+              <li><strong>Eficiencia de Almacenamiento:</strong> Los textos descriptivos (direcciones, nombres de categorías) se guardan una sola vez en las <em>Dimensiones</em>. La <em>Tabla de Hechos</em> solo almacena números (IDs numéricos y cantidades).</li>
+              <li><strong>Rendimiento en Consultas:</strong> Los motores analíticos (como PowerBI VertiPaq o ClickHouse) comprimen y escanean millones de filas numéricas en milisegundos.</li>
+              <li><strong>Mantenimiento sencillo:</strong> Si un producto cambia de categoría, se actualiza en un único registro de la dimensión sin alterar el histórico de transacciones.</li>
+            </ul>
+          `
+        },
+        evitar_pastel: {
+          title: "¿Por qué los expertos en datos desaconsejan los gráficos de pastel (pie charts)?",
+          text: `
+            <p>El cerebro humano tiene dificultad evaluando áreas y ángulos relativos:</p>
+            <ul>
+              <li>Con más de 3 o 4 porciones, es casi imposible discernir visualmente si una rebanada representa el 18% o el 22% sin leer el número exacto.</li>
+              <li>Ocupan mucho espacio en el dashboard para transmitir muy poca información.</li>
+              <li><strong>Alternativa recomendada:</strong> Gráficos de barras horizontales ordenadas de mayor a menor. Son infinitamente más legibles y permiten comparar decenas de categorías al instante.</li>
+            </ul>
+          `
+        },
+        datos_sucios: {
+          title: "¿Qué hacer ante datos sucios, inconsistentes o valores nulos?",
+          text: `
+            <p>El 70% del tiempo de un analista se dedica a la preparación de datos (Data Wrangling):</p>
+            <ul>
+              <li><strong>Valores Nulos (Nulls):</strong> No los borres a ciegas. Evalúa si representan "cero", "no aplica" o un fallo en el sistema de captura. En métricas numéricas se imputan con la mediana/media o se aíslan.</li>
+              <li><strong>Valores Atípicos (Outliers):</strong> Distingue entre errores de tipeo (ej. precio $9999999) y eventos extraordinarios legítimos (como la venta de una flota empresarial).</li>
+              <li><strong>Normalización de Textos:</strong> Unifica variantes como "México", "CDMX", "mexico", "MEX" mediante tablas de homologación.</li>
+            </ul>
+          `
+        },
+        storytelling: {
+          title: "¿Cómo presentar datos a líderes y directores (Data Storytelling)?",
+          text: `
+            <p>Un directivo no busca ver fórmulas ni código; busca responder 3 preguntas básicas:</p>
+            <ol>
+              <li><strong>¿Qué pasó? (El Hecho):</strong> <em>"Nuestras ventas en la Región Norte cayeron un 15% este mes."</em></li>
+              <li><strong>¿Por qué pasó? (El Diagnóstico):</strong> <em>"El inventario de laptops se agotó debido a retrasos en aduanas."</em></li>
+              <li><strong>¿Qué debemos hacer? (La Decisión recomendada):</strong> <em>"Diversificar con un proveedor local para mitigar el 80% del riesgo en el siguiente trimestre."</em></li>
+            </ol>
+          `
+        },
+        roi_analitica: {
+          title: "¿Cómo justificar el valor de una iniciativa de BI en una empresa?",
+          text: `
+            <p>El software de BI por sí solo no genera dinero; el valor se mide en el impacto de las decisiones que habilita:</p>
+            <ul>
+              <li><strong>Ahorro en Horas Hombre:</strong> Automatizar reportes manuales que antes tomaban 2 días a un equipo en Excel.</li>
+              <li><strong>Detección de Fugas de Capital:</strong> Identificar productos o sucursales con margen negativo que pasaban inadvertidos.</li>
+              <li><strong>Optimización de Precios y Stock:</strong> Evitar quiebres de inventario en temporadas de alta demanda.</li>
+            </ul>
+          `
+        }
+      };
+
+      const chatMessages = document.getElementById("chatMessages");
+      const chatForm = document.getElementById("chatForm");
+      const chatInput = document.getElementById("chatInput");
+      const quickTopicBtns = document.querySelectorAll(".quick-topic-btn");
+
+      function addChatMessage(sender, htmlContent, isUser = false) {
+        const bubble = document.createElement("div");
+        bubble.className = `chat-bubble ${isUser ? 'user' : 'bot'}`;
+
+        const headerBadge = isUser ? '<span>👤</span> Tú' : '<span>🤖</span> Asistente BI';
+        bubble.innerHTML = `
+          <div class="bot-header-badge">${headerBadge}</div>
+          <div>${htmlContent}</div>
+        `;
+        chatMessages.appendChild(bubble);
+        chatMessages.scrollTop = chatMessages.scrollHeight;
+      }
+
+      quickTopicBtns.forEach(btn => {
+        btn.addEventListener("click", () => {
+          quickTopicBtns.forEach(b => b.classList.remove("active"));
+          btn.classList.add("active");
+
+          const queryKey = btn.getAttribute("data-query");
+          const item = BI_KNOWLEDGE_BASE[queryKey];
+          if (item) {
+            addChatMessage("user", `<em>${item.title}</em>`, true);
+            setTimeout(() => {
+              addChatMessage("bot", item.text);
+            }, 250);
+          }
+        });
+      });
+
+      chatForm.addEventListener("submit", (e) => {
+        e.preventDefault();
+        const query = chatInput.value.trim();
+        if (!query) return;
+
+        addChatMessage("user", query, true);
+        chatInput.value = "";
+
+        // Motor de coincidencia por palabras clave
+        setTimeout(() => {
+          const qLower = query.toLowerCase();
+          let response = "";
+
+          if (qLower.includes("kpi") || qLower.includes("metrica") || qLower.includes("indicador")) {
+            response = BI_KNOWLEDGE_BASE.diferencia_metrica_kpi.text;
+          } else if (qLower.includes("fase") || qLower.includes("ciclo") || qLower.includes("proceso") || qLower.includes("paso")) {
+            response = BI_KNOWLEDGE_BASE.ciclo_bi.text;
+          } else if (qLower.includes("estrella") || qLower.includes("dimension") || qLower.includes("hecho") || qLower.includes("star")) {
+            response = BI_KNOWLEDGE_BASE.esquema_estrella.text;
+          } else if (qLower.includes("pastel") || qLower.includes("tarta") || qLower.includes("pie") || qLower.includes("donut")) {
+            response = BI_KNOWLEDGE_BASE.evitar_pastel.text;
+          } else if (qLower.includes("limp") || qLower.includes("sucio") || qLower.includes("nulo") || qLower.includes("outlier") || qLower.includes("atipic")) {
+            response = BI_KNOWLEDGE_BASE.datos_sucios.text;
+          } else if (qLower.includes("storytelling") || qLower.includes("presentar") || qLower.includes("directiv") || qLower.includes("comunicar")) {
+            response = BI_KNOWLEDGE_BASE.storytelling.text;
+          } else if (qLower.includes("etl")) {
+            response = `
+              <p><strong>ETL</strong> significa <strong>Extract, Transform, Load</strong> (Extracción, Transformación y Carga):</p>
+              <ul>
+                <li><strong>Extract:</strong> Obtener datos crudos de las fuentes originales (bases SQL, APIs, hojas de cálculo).</li>
+                <li><strong>Transform:</strong> Filtrar, limpiar, validar reglas de negocio y estructurar los datos.</li>
+                <li><strong>Load:</strong> Guardar los datos listos en el Data Warehouse o modelo tabular para análisis.</li>
+              </ul>
+            `;
+          } else if (qLower.includes("dax") || qLower.includes("sql")) {
+            response = `
+              <p>Tanto <strong>SQL</strong> como <strong>DAX</strong> son vitales en BI, pero con propósitos distintos:</p>
+              <ul>
+                <li><strong>SQL (Structured Query Language):</strong> Se usa en la fase de preparación y base de datos para filtrar, unir tablas (JOINs) y consultar almacenes relacionales.</li>
+                <li><strong>DAX (Data Analysis Expressions):</strong> Es el lenguaje de fórmulas de Power BI y Analysis Services para crear medidas dinámicas en memoria (ej. ventas acumuladas año a la fecha, YTD).</li>
+              </ul>
+            `;
+          } else if (qLower.includes("churn") || qLower.includes("retencion")) {
+            response = `
+              <p>El <strong>Churn Rate</strong> mide el porcentaje de usuarios o clientes que cancelan su suscripción o dejan de comprar en un periodo de tiempo. Reducir el Churn un 5% puede elevar las ganancias entre un 25% y 95% debido al costo que implica captar clientes nuevos.</p>
+              <p>Puedes probar su fórmula en nuestra pestaña <strong>4. Calculadora de KPIs</strong>.</p>
+            `;
+          } else if (qLower.includes("granularidad")) {
+            response = `
+              <p>La <strong>Granularidad</strong> define el nivel máximo de detalle de una tabla de datos:</p>
+              <ul>
+                <li><em>Granularidad fina:</em> Una fila por cada producto escaneado en el ticket de compra (registro por ítem de venta).</li>
+                <li><em>Granularidad agregada:</em> Una fila por el total de ventas acumuladas por sucursal al final del día.</li>
+              </ul>
+              <p>En BI se recomienda almacenar la máxima granularidad posible en los hechos, para permitir al usuario hacer <em>drill-down</em> a cualquier nivel.</p>
+            `;
+          } else {
+            response = `
+              <p>Excelente consulta sobre <strong>"${query}"</strong>.</p>
+              <p>En Inteligencia de Negocios, el enfoque recomendado es primero delimitar el <strong>objetivo de decisión</strong> (¿qué acción tomará la empresa con esta respuesta?), luego identificar las <strong>fuentes de verdad</strong> del dato, y finalmente sintetizarlo en una visualización limpia con contexto histórico.</p>
+              <p>Te sugiero explorar nuestras secciones de <em>Selector de Gráficos</em> y <em>Glosario</em> para profundizar en este concepto.</p>
+            `;
+          }
+
+          addChatMessage("bot", response);
+        }, 350);
+      });
+
+      /* ========================================================================
+         7. RECOMENDADOR DE VISUALIZACIONES (Chart Picker)
+         ======================================================================== */
+      const goalButtons = document.querySelectorAll("[data-goal]");
+      const varButtons = document.querySelectorAll("[data-vars]");
+      let currentGoal = "tendencia";
+      let currentVars = "pocas";
+
+      const CHART_RECOMMENDATIONS = {
+        "tendencia_pocas": {
+          name: "Gráfico de Líneas Continuas",
+          badge: "Evolución Temporal",
+          svgPreview: `
+            <svg viewBox="0 0 280 120" style="width:100%; max-width:240px; height:100px;">
+              <path d="M 20 90 L 70 70 L 130 80 L 190 35 L 260 20" fill="none" stroke="#2563eb" stroke-width="4" stroke-linecap="round"/>
+              <circle cx="20" cy="90" r="5" fill="#2563eb"/>
+              <circle cx="70" cy="70" r="5" fill="#2563eb"/>
+              <circle cx="130" cy="80" r="5" fill="#2563eb"/>
+              <circle cx="190" cy="35" r="5" fill="#2563eb"/>
+              <circle cx="260" cy="20" r="5" fill="#2563eb"/>
+            </svg>
+          `,
+          desc: "Es la visualización idónea cuando tienes una o pocas series a lo largo de un periodo de tiempo continuo (días, meses, años). Permite al ojo humano proyectar aceleraciones y caídas con rapidez.",
+          pros: "Excelente para series cronológicas continuas, tendencias acumuladas y estacionalidad.",
+          cons: "Evita usarlo si el eje horizontal no representa tiempo continuo ordenado."
+        },
+        "tendencia_muchas": {
+          name: "Gráfico de Áreas Apiladas o Multilínea con Filtro",
+          badge: "Tendencia de Múltiples Series",
+          svgPreview: `
+            <svg viewBox="0 0 280 120" style="width:100%; max-width:240px; height:100px;">
+              <path d="M 20 95 L 80 80 L 140 70 L 200 45 L 260 30 L 260 110 L 20 110 Z" fill="rgba(37, 99, 235, 0.25)"/>
+              <path d="M 20 95 L 80 80 L 140 70 L 200 45 L 260 30" fill="none" stroke="#2563eb" stroke-width="3"/>
+              <path d="M 20 105 L 80 95 L 140 90 L 200 75 L 260 65" fill="none" stroke="#10b981" stroke-width="2" stroke-dasharray="3,3"/>
+            </svg>
+          `,
+          desc: "Al tener muchas series temporales, las líneas pueden cruzarse y generar el efecto 'espagueti'. Se recomienda usar áreas apiladas o permitir filtrar por serie destacada.",
+          pros: "Muestra la evolución del volumen total y la contribución de cada componente simultáneamente.",
+          cons: "Cuidado con apilar más de 5 series porque las líneas intermedias resultan difíciles de leer con precisión."
+        },
+        "tendencia_continuas": {
+          name: "Líneas de Doble Eje Y (Dual-Axis) con Precaución",
+          badge: "Comparación de Escalas",
+          svgPreview: `
+            <svg viewBox="0 0 280 120" style="width:100%; max-width:240px; height:100px;">
+              <path d="M 20 85 L 80 60 L 140 75 L 200 30 L 260 15" fill="none" stroke="#2563eb" stroke-width="3"/>
+              <path d="M 20 30 L 80 45 L 140 40 L 200 80 L 260 95" fill="none" stroke="#f59e0b" stroke-width="3"/>
+            </svg>
+          `,
+          desc: "Permite graficar dos métricas con magnitudes distintas en el tiempo (ej. Ingresos en millones en el eje izquierdo vs Tasa de conversión % en el derecho).",
+          pros: "Permite detectar correlaciones temporales entre métricas con unidades dispares.",
+          cons: "Fácil de malinterpretar por usuarios novatos al confundir las escalas."
+        },
+        "comparacion_pocas": {
+          name: "Gráfico de Columnas Verticales",
+          badge: "Comparativa Discreta",
+          svgPreview: `
+            <svg viewBox="0 0 280 120" style="width:100%; max-width:240px; height:100px;">
+              <rect x="30" y="40" width="35" height="70" fill="#3b82f6" rx="4"/>
+              <rect x="95" y="20" width="35" height="90" fill="#3b82f6" rx="4"/>
+              <rect x="160" y="55" width="35" height="55" fill="#3b82f6" rx="4"/>
+              <rect x="225" y="30" width="35" height="80" fill="#3b82f6" rx="4"/>
+            </svg>
+          `,
+          desc: "El estándar de oro para comparar pocas categorías independientes (hasta 6 u 7). Las alturas relativas son intuitivas y precisas.",
+          pros: "Fácil de leer, familiar para cualquier audiencia y permite añadir etiquetas directas.",
+          cons: "Si los nombres de categorías son muy largos, las etiquetas se inclinan y cansan la vista."
+        },
+        "comparacion_muchas": {
+          name: "Gráfico de Barras Horizontales",
+          badge: "Ranking y Categorías Extensas",
+          svgPreview: `
+            <svg viewBox="0 0 280 120" style="width:100%; max-width:240px; height:100px;">
+              <rect x="60" y="15" width="180" height="16" fill="#3b82f6" rx="3"/>
+              <rect x="60" y="40" width="140" height="16" fill="#3b82f6" rx="3"/>
+              <rect x="60" y="65" width="110" height="16" fill="#3b82f6" rx="3"/>
+              <rect x="60" y="90" width="75" height="16" fill="#3b82f6" rx="3"/>
+            </svg>
+          `,
+          desc: "Cuando tienes más de 7 categorías o nombres extensos (ej. departamentos, países o SKUs de producto), gira el gráfico a horizontal.",
+          pros: "Los textos se leen de izquierda a derecha sin rotación y permite scroll vertical natural.",
+          cons: "Asegúrate de ordenar siempre las barras de mayor a menor para facilitar el análisis inmediato."
+        },
+        "comparacion_continuas": {
+          name: "Gráfico de Barras Agrupadas o Tornado",
+          badge: "Comparación Bivariada",
+          svgPreview: `
+            <svg viewBox="0 0 280 120" style="width:100%; max-width:240px; height:100px;">
+              <rect x="40" y="25" width="20" height="80" fill="#3b82f6" rx="2"/>
+              <rect x="65" y="45" width="20" height="60" fill="#10b981" rx="2"/>
+              <rect x="140" y="15" width="20" height="90" fill="#3b82f6" rx="2"/>
+              <rect x="165" y="35" width="20" height="70" fill="#10b981" rx="2"/>
+            </svg>
+          `,
+          desc: "Permite comparar dos métricas (ej. Ventas reales vs Meta presupuestada) en paralelo para un conjunto de categorías.",
+          pros: "Excelente para análisis de desviaciones de presupuesto (Budget vs Actual).",
+          cons: "No uses más de 3 barras por grupo para no saturar el espacio."
+        },
+        "composicion_pocas": {
+          name: "Gráfico Donut o Treemap Compacto",
+          badge: "Partes de un Total",
+          svgPreview: `
+            <svg viewBox="0 0 280 120" style="width:100%; max-width:240px; height:100px;">
+              <circle cx="140" cy="60" r="45" fill="none" stroke="#e2e8f0" stroke-width="20"/>
+              <circle cx="140" cy="60" r="45" fill="none" stroke="#2563eb" stroke-width="20" stroke-dasharray="160 300" stroke-dashoffset="0"/>
+              <circle cx="140" cy="60" r="45" fill="none" stroke="#10b981" stroke-width="20" stroke-dasharray="80 300" stroke-dashoffset="-160"/>
+            </svg>
+          `,
+          desc: "Ideal únicamente para 2 a 5 proporciones claras que sumen exactamente el 100%. El orificio central puede aprovecharse para mostrar el total consolidado.",
+          pros: "Elegante y transmite la idea de totalidad cuando las diferencias porcentuales son notorias.",
+          cons: "Nunca uses más de 5 cortes ni presentes valores porcentuales que no sumen el 100%."
+        },
+        "composicion_muchas": {
+          name: "Treemap (Mapa de Árbol)",
+          badge: "Jerarquías y Composición Compleja",
+          svgPreview: `
+            <svg viewBox="0 0 280 120" style="width:100%; max-width:240px; height:100px;">
+              <rect x="20" y="10" width="140" height="100" fill="#2563eb" rx="2"/>
+              <rect x="165" y="10" width="95" height="48" fill="#3b82f6" rx="2"/>
+              <rect x="165" y="62" width="55" height="48" fill="#60a5fa" rx="2"/>
+              <rect x="224" y="62" width="36" height="48" fill="#93c5fd" rx="2"/>
+            </svg>
+          `,
+          desc: "Utiliza rectángulos anidados donde el área representa la magnitud de cada elemento. Ideal para ver composiciones jerárquicas con decenas de partes.",
+          pros: "Aprovecha el espacio rectangular y resalta los jugadores dominantes al instante.",
+          cons: "No es apto para comparar con precisión milimétrica valores muy cercanos."
+        },
+        "composicion_continuas": {
+          name: "Gráfico de Barras 100% Apiladas",
+          badge: "Composición Relativa",
+          svgPreview: `
+            <svg viewBox="0 0 280 120" style="width:100%; max-width:240px; height:100px;">
+              <rect x="50" y="10" width="45" height="60" fill="#2563eb"/>
+              <rect x="50" y="70" width="45" height="40" fill="#10b981"/>
+              <rect x="150" y="10" width="45" height="30" fill="#2563eb"/>
+              <rect x="150" y="40" width="45" height="70" fill="#10b981"/>
+            </svg>
+          `,
+          desc: "Muestra la proporción porcentual de cada componente dentro de varios grupos o periodos, normalizados al 100%.",
+          pros: "Permite ver el cambio de mezcla de productos o cuota de mercado en el tiempo.",
+          cons: "Solo el segmento inferior tiene una línea base fija; los intermedios son difíciles de evaluar."
+        },
+        "relacion_pocas": {
+          name: "Diagrama de Dispersión (Scatter Plot)",
+          badge: "Correlación y Regresión",
+          svgPreview: `
+            <svg viewBox="0 0 280 120" style="width:100%; max-width:240px; height:100px;">
+              <line x1="30" y1="105" x2="260" y2="105" stroke="#94a3b8" stroke-width="1.5"/>
+              <line x1="30" y1="15" x2="30" y2="105" stroke="#94a3b8" stroke-width="1.5"/>
+              <circle cx="60" cy="90" r="5" fill="#2563eb"/>
+              <circle cx="100" cy="75" r="5" fill="#2563eb"/>
+              <circle cx="150" cy="50" r="5" fill="#2563eb"/>
+              <circle cx="190" cy="40" r="5" fill="#2563eb"/>
+              <circle cx="240" cy="25" r="5" fill="#2563eb"/>
+            </svg>
+          `,
+          desc: "Cada punto representa un registro en dos ejes numéricos continuos (ej. Gasto en Publicidad vs Ventas Obtenidas). Permite identificar si existe correlación positiva o negativa.",
+          pros: "Invaluable para descubrir causalidades, agrupaciones (clusters) y outliers.",
+          cons: "Requiere alfabetización básica en datos para interpretarse correctamente."
+        },
+        "relacion_muchas": {
+          name: "Gráfico de Burbujas Multivariable (Bubble Chart)",
+          badge: "3 Variables Simultáneas",
+          svgPreview: `
+            <svg viewBox="0 0 280 120" style="width:100%; max-width:240px; height:100px;">
+              <circle cx="70" cy="80" r="14" fill="rgba(37, 99, 235, 0.6)" stroke="#2563eb"/>
+              <circle cx="130" cy="55" r="24" fill="rgba(16, 185, 129, 0.6)" stroke="#10b981"/>
+              <circle cx="210" cy="35" r="18" fill="rgba(245, 158, 11, 0.6)" stroke="#f59e0b"/>
+            </svg>
+          `,
+          desc: "Permite mapear tres métricas a la vez: Eje X (Ventas), Eje Y (Margen %) y el Tamaño de la Burbuja (Volumen de Clientes o Población).",
+          pros: "Concentra una enorme riqueza analítica en un solo espacio.",
+          cons: "Si las burbujas se solapan o varían poco de tamaño, la gráfica puede volverse ilegible."
+        },
+        "relacion_continuas": {
+          name: "Matriz de Correlación / Heatmap",
+          badge: "Mapa de Calor Relacional",
+          svgPreview: `
+            <svg viewBox="0 0 280 120" style="width:100%; max-width:240px; height:100px;">
+              <rect x="70" y="15" width="40" height="40" fill="#1e40af"/>
+              <rect x="115" y="15" width="40" height="40" fill="#60a5fa"/>
+              <rect x="160" y="15" width="40" height="40" fill="#bfdbfe"/>
+              <rect x="70" y="60" width="40" height="40" fill="#60a5fa"/>
+              <rect x="115" y="60" width="40" height="40" fill="#1e40af"/>
+              <rect x="160" y="60" width="40" height="40" fill="#93c5fd"/>
+            </svg>
+          `,
+          desc: "Usa gradientes de color para mostrar coeficientes de correlación o intensidad entre múltiples pares de variables o cruces matriciales.",
+          pros: "Permite explorar rápidamente qué variables se mueven en conjunto en datasets grandes.",
+          cons: "Exige una paleta de color accesible para personas con daltonismo."
+        },
+        "distribucion_pocas": {
+          name: "Histograma Clásico",
+          badge: "Frecuencias y Concentración",
+          svgPreview: `
+            <svg viewBox="0 0 280 120" style="width:100%; max-width:240px; height:100px;">
+              <rect x="30" y="85" width="35" height="25" fill="#3b82f6"/>
+              <rect x="70" y="50" width="35" height="60" fill="#3b82f6"/>
+              <rect x="110" y="20" width="35" height="90" fill="#3b82f6"/>
+              <rect x="150" y="45" width="35" height="65" fill="#3b82f6"/>
+              <rect x="190" y="75" width="35" height="35" fill="#3b82f6"/>
+            </svg>
+          `,
+          desc: "Agrupa una variable numérica en rangos homogéneos (bins) para descubrir si tiene distribución normal (campana de Gauss) o sesgo asimétrico.",
+          pros: "Básico para análisis estadístico exploratorio (EDA) y fijación de rangos de precio.",
+          cons: "El tamaño del rango (bin width) influye fuertemente en cómo se percibe la distribución."
+        },
+        "distribucion_muchas": {
+          name: "Diagrama de Caja y Bigotes (Box Plot)",
+          badge: "Dispersión, Cuartiles y Outliers",
+          svgPreview: `
+            <svg viewBox="0 0 280 120" style="width:100%; max-width:240px; height:100px;">
+              <line x1="30" y1="60" x2="250" y2="60" stroke="#94a3b8" stroke-width="2"/>
+              <rect x="90" y="30" width="100" height="60" fill="var(--bg-surface-elevated)" stroke="#2563eb" stroke-width="2"/>
+              <line x1="140" y1="30" x2="140" y2="90" stroke="#dc2626" stroke-width="3"/>
+              <circle cx="240" cy="60" r="4" fill="#dc2626"/>
+            </svg>
+          `,
+          desc: "Sintetiza la mediana, el rango intercuartílico (IQR) y los valores atípicos (outliers) de múltiples distribuciones simultáneas.",
+          pros: "Permite comparar la dispersión de salarios, tiempos de entrega o tickets entre múltiples sucursales a la vez.",
+          cons: "Audiencias no analíticas pueden requerir explicación inicial de los cuartiles."
+        },
+        "distribucion_continuas": {
+          name: "Gráfico de Densidad (Violin Plot / KDE)",
+          badge: "Estimación de Densidad",
+          svgPreview: `
+            <svg viewBox="0 0 280 120" style="width:100%; max-width:240px; height:100px;">
+              <path d="M 30 60 Q 90 20 140 30 T 250 60 Q 200 90 140 90 T 30 60 Z" fill="rgba(37, 99, 235, 0.4)" stroke="#2563eb" stroke-width="2"/>
+            </svg>
+          `,
+          desc: "Curva suavizada que muestra la probabilidad de distribución de una variable continua.",
+          pros: "Especialmente útil cuando hay múltiples picos de concentración (distribuciones bimodales).",
+          cons: "Puede sugerir datos en rangos donde no existen mediciones reales debido al suavizado."
+        }
+      };
+
+      function updateChartRecommendation() {
+        const key = `${currentGoal}_${currentVars}`;
+        const rec = CHART_RECOMMENDATIONS[key] || CHART_RECOMMENDATIONS["tendencia_pocas"];
+
+        document.getElementById("recChartName").textContent = rec.name;
+        document.getElementById("recBadgeTag").textContent = rec.badge;
+        document.getElementById("recPreviewContainer").innerHTML = rec.svgPreview;
+        document.getElementById("recDescription").textContent = rec.desc;
+        document.getElementById("recWhenToUse").textContent = rec.pros;
+        document.getElementById("recWhatToAvoid").textContent = rec.cons;
+      }
+
+      goalButtons.forEach(btn => {
+        btn.addEventListener("click", () => {
+          goalButtons.forEach(b => b.classList.remove("selected"));
+          btn.classList.add("selected");
+          currentGoal = btn.getAttribute("data-goal");
+          updateChartRecommendation();
+        });
+      });
+
+      varButtons.forEach(btn => {
+        btn.addEventListener("click", () => {
+          varButtons.forEach(b => b.classList.remove("selected"));
+          btn.classList.add("selected");
+          currentVars = btn.getAttribute("data-vars");
+          updateChartRecommendation();
+        });
+      });
+
+      /* ========================================================================
+         8. CALCULADORAS INTERACTIVAS DE KPIS
+         ======================================================================== */
+      // 8.1 ROI
+      const roiIncome = document.getElementById("roiIncome");
+      const roiCost = document.getElementById("roiCost");
+      const roiResult = document.getElementById("roiResult");
+      const roiStatus = document.getElementById("roiStatus");
+
+      function calcRoi() {
+        const inc = parseFloat(roiIncome.value) || 0;
+        const cost = parseFloat(roiCost.value) || 1;
+        const roi = ((inc - cost) / cost) * 100;
+        roiResult.textContent = `${roi >= 0 ? '+' : ''}${roi.toFixed(1)}%`;
+
+        if (roi > 50) {
+          roiStatus.innerHTML = "✅ Retorno Altamente Favorable";
+          roiStatus.style.color = "var(--success)";
+        } else if (roi >= 0) {
+          roiStatus.innerHTML = "ℹ️ Retorno Moderado";
+          roiStatus.style.color = "var(--info)";
+        } else {
+          roiStatus.innerHTML = "⚠️ Pérdida de Inversión (ROI Negativo)";
+          roiStatus.style.color = "var(--danger)";
+        }
+      }
+
+      // 8.2 CAC
+      const cacSpend = document.getElementById("cacSpend");
+      const cacCustomers = document.getElementById("cacCustomers");
+      const cacResult = document.getElementById("cacResult");
+      const cacStatus = document.getElementById("cacStatus");
+
+      function calcCac() {
+        const spend = parseFloat(cacSpend.value) || 0;
+        const cust = parseFloat(cacCustomers.value) || 1;
+        const cac = spend / cust;
+        cacResult.textContent = `$${cac.toFixed(2)} / cliente`;
+
+        if (cac <= 30) {
+          cacStatus.innerHTML = "✅ CAC Muy Eficiente";
+          cacStatus.style.color = "var(--success)";
+        } else if (cac <= 100) {
+          cacStatus.innerHTML = "ℹ️ CAC Estándar para B2B / Pyme";
+          cacStatus.style.color = "var(--info)";
+        } else {
+          cacStatus.innerHTML = "⚠️ CAC Elevado (Evaluar canales)";
+          cacStatus.style.color = "var(--warning)";
+        }
+      }
+
+      // 8.3 Churn Rate
+      const churnLost = document.getElementById("churnLost");
+      const churnInitial = document.getElementById("churnInitial");
+      const churnResult = document.getElementById("churnResult");
+      const churnStatus = document.getElementById("churnStatus");
+
+      function calcChurn() {
+        const lost = parseFloat(churnLost.value) || 0;
+        const initial = parseFloat(churnInitial.value) || 1;
+        const churn = (lost / initial) * 100;
+        churnResult.textContent = `${churn.toFixed(2)}%`;
+
+        if (churn <= 3) {
+          churnStatus.innerHTML = "✅ Excelente Retención (< 3%)";
+          churnStatus.style.color = "var(--success)";
+        } else if (churn <= 7) {
+          churnStatus.innerHTML = "ℹ️ Deserción Aceptable (3% - 7%)";
+          churnStatus.style.color = "var(--info)";
+        } else {
+          churnStatus.innerHTML = "🚨 Fuga Crítica de Clientes (> 7%)";
+          churnStatus.style.color = "var(--danger)";
+        }
+      }
+
+      // 8.4 Margen Bruto %
+      const marginSales = document.getElementById("marginSales");
+      const marginCogs = document.getElementById("marginCogs");
+      const marginResult = document.getElementById("marginResult");
+      const marginStatus = document.getElementById("marginStatus");
+
+      function calcMargin() {
+        const sales = parseFloat(marginSales.value) || 1;
+        const cogs = parseFloat(marginCogs.value) || 0;
+        const margin = ((sales - cogs) / sales) * 100;
+        marginResult.textContent = `${margin.toFixed(1)}%`;
+
+        if (margin >= 40) {
+          marginStatus.innerHTML = "✅ Margen Robusto y Saludable";
+          marginStatus.style.color = "var(--success)";
+        } else if (margin >= 20) {
+          marginStatus.innerHTML = "ℹ️ Margen Promedio";
+          marginStatus.style.color = "var(--info)";
+        } else {
+          marginStatus.innerHTML = "⚠️ Margen Estrecho (Riesgo operativo)";
+          marginStatus.style.color = "var(--danger)";
+        }
+      }
+
+      [roiIncome, roiCost].forEach(el => el.addEventListener("input", calcRoi));
+      [cacSpend, cacCustomers].forEach(el => el.addEventListener("input", calcCac));
+      [churnLost, churnInitial].forEach(el => el.addEventListener("input", calcChurn));
+      [marginSales, marginCogs].forEach(el => el.addEventListener("input", calcMargin));
+
+      /* ========================================================================
+         9. CASOS PRÁCTICOS & EVALUACIÓN (Quiz Interactivo)
+         ======================================================================== */
+      const QUIZ_QUESTIONS = [
+        {
+          id: 1,
+          title: "Caso 1: Facturación Alta pero Pérdida Financiera",
+          context: "Una tienda en la Región Norte vendió $500,000 en el mes (la que más facturó de la cadena), pero al cierre de mes el área de contabilidad reportó pérdidas netas. Como analista de BI, ¿qué métrica debiste vigilar primero?",
+          options: [
+            { text: "El número total de visitas al sitio web de la tienda.", correct: false },
+            { text: "El Margen Bruto y Costo de Ventas (COGS) por línea de producto, para detectar si se vendió con descuentos excesivos o con costo superior al precio.", correct: true },
+            { text: "La cantidad de seguidores en redes sociales de la sucursal.", correct: false },
+            { text: "El número de empleados asignados al área de limpieza.", correct: false }
+          ],
+          explanation: "¡Correcto! Facturación (Revenue) no es lo mismo que Ganancia (Profit). Monitorear el Margen % por categoría evita caer en la trampa de 'vender mucho perdiendo en cada unidad'."
+        },
+        {
+          id: 2,
+          title: "Caso 2: Elección de la Visualización Idónea",
+          context: "El Director General desea un reporte en una sola vista para comparar las ventas mensuales de los últimos 24 meses continuos. Un colega sugiere un gráfico circular (pastel) con 24 rebanadas. ¿Qué recomendación técnica debes hacerle?",
+          options: [
+            { text: "Aceptar el gráfico circular pero colocar colores fluorescentes.", correct: false },
+            { text: "Cambiar a un gráfico de líneas continuas (Line Chart), pues el ojo humano percibe con facilidad la evolución cronológica y tendencias sin saturación.", correct: true },
+            { text: "Crear un gráfico 3D con sombras pesadas.", correct: false },
+            { text: "Reemplazar los números por emojis de dinero sin escalas.", correct: false }
+          ],
+          explanation: "¡Exacto! Un gráfico circular con 24 rebanadas es incomprensible e induce al error. Las líneas continuas son el estándar indiscutible para series de tiempo cronológicas."
+        },
+        {
+          id: 3,
+          title: "Caso 3: Modelado de Datos en el Data Warehouse",
+          context: "Estás diseñando el modelo analítico para una cadena de supermercados. Tienes información de fechas, nombres de cajeros, sucursales y millones de tickets de compra. ¿Cómo clasificarías los tickets de compra y las sucursales?",
+          options: [
+            { text: "Tickets como Dimensión y Sucursales como Hechos.", correct: false },
+            { text: "Tickets de compra como Tabla de Hechos (Fact) y Sucursales como Tabla de Dimensión (Dim).", correct: true },
+            { text: "Ambos deben ser tablas de hechos sin dimensiones.", correct: false },
+            { text: "Todos los datos deben colocarse en una sola pestaña de Excel sin llaves primarias.", correct: false }
+          ],
+          explanation: "¡Muy bien! Los tickets son transacciones cuantificables (Hechos/Facts), mientras que la sucursal es el contexto descriptivo con sus atributos (Dimensión/Dim)."
+        },
+        {
+          id: 4,
+          title: "Caso 4: Tasa de Retención vs Captación",
+          context: "Tu empresa gasta $200 en adquirir cada nuevo cliente (CAC = $200), pero la tasa de cancelación (Churn Rate) mensual es del 15%, y la mayoría se marcha tras su primera compra. ¿Cuál es la conclusión de negocio más acertada?",
+          options: [
+            { text: "Hay que triplicar el presupuesto de marketing para captar aún más personas.", correct: false },
+            { text: "Existe una fuga crítica en el 'cubo' de clientes: el costo de adquisición no se recuperará si los usuarios abandonan prematuramente. La prioridad analítica debe ser el 'Onboarding' y la retención.", correct: true },
+            { text: "El Churn de 15% mensual es normal y deseable en cualquier negocio.", correct: false },
+            { text: "Dejar de medir el Churn para no alertar a los inversores.", correct: false }
+          ],
+          explanation: "¡Brillante! Captar clientes para un producto donde el 15% se marcha cada mes destruye el valor de la empresa. En BI, la retención suele tener un ROI mucho mayor que la captación indiscriminada."
+        },
+        {
+          id: 5,
+          title: "Caso 5: Calidad del Dato y Valores Faltantes (Data Quality)",
+          context: "Al conectar el CRM con el Dashboard de BI, descubres que el 30% de los registros de clientes tienen el campo 'Teléfono' en blanco y 'Fecha_Nacimiento' marcada como 1900-01-01. ¿Qué práctica profesional de BI corresponde?",
+          options: [
+            { text: "Borrar de inmediato el 30% de la base de clientes para que el reporte quede limpio.", correct: false },
+            { text: "Documentar la anomalía, aislar el valor por defecto (1900-01-01) para que no distorsione el cálculo de la edad promedio, y establecer reglas de validación en la fase de ETL.", correct: true },
+            { text: "Rellenar las fechas faltantes con la fecha de hoy para falsear la estadística.", correct: false },
+            { text: "Ocultar el reporte y no avisar al equipo de ingeniería de datos.", correct: false }
+          ],
+          explanation: "¡Totalmente correcto! Borrar clientes perdería historial de compras, mientras que promediar 1900-01-01 distorsionaría toda la métrica de edad. Se limpian y aíslan en el proceso ETL con reglas claras."
+        }
+      ];
+
+      let quizScore = 0;
+      let answeredCount = 0;
+      const userAnswers = {};
+
+      function renderQuiz() {
+        const container = document.getElementById("quizQuestionsContainer");
+        container.innerHTML = "";
+
+        QUIZ_QUESTIONS.forEach(q => {
+          const card = document.createElement("div");
+          card.className = "challenge-card";
+          card.id = `quizCard-${q.id}`;
+
+          card.innerHTML = `
+            <div class="challenge-number">Reto Analítico #${q.id}</div>
+            <div class="challenge-title">${q.title}</div>
+            <div class="challenge-context">💡 <strong>Escenario:</strong> ${q.context}</div>
+            <div class="quiz-options" id="quizOpts-${q.id}">
+              ${q.options.map((opt, optIdx) => `
+                <button type="button" class="quiz-option-btn" data-qid="${q.id}" data-idx="${optIdx}">
+                  <span>🔘</span> <span>${opt.text}</span>
+                </button>
+              `).join("")}
+            </div>
+            <div class="quiz-feedback" id="quizFb-${q.id}"></div>
+          `;
+
+          container.appendChild(card);
+        });
+
+        // Asignar eventos
+        container.querySelectorAll(".quiz-option-btn").forEach(btn => {
+          btn.addEventListener("click", () => {
+            const qid = parseInt(btn.getAttribute("data-qid"));
+            const idx = parseInt(btn.getAttribute("data-idx"));
+
+            if (userAnswers[qid] !== undefined) return; // Ya respondida
+
+            const question = QUIZ_QUESTIONS.find(q => q.id === qid);
+            const isCorrect = question.options[idx].correct;
+            userAnswers[qid] = isCorrect;
+
+            const optsBox = document.getElementById(`quizOpts-${qid}`);
+            const fbBox = document.getElementById(`quizFb-${qid}`);
+
+            // Deshabilitar botones de esta pregunta
+            optsBox.querySelectorAll(".quiz-option-btn").forEach((b, bIdx) => {
+              b.disabled = true;
+              if (question.options[bIdx].correct) {
+                b.classList.add("correct");
+                b.querySelector("span").textContent = "✅";
+              } else if (bIdx === idx && !isCorrect) {
+                b.classList.add("incorrect");
+                b.querySelector("span").textContent = "❌";
+              }
+            });
+
+            if (isCorrect) {
+              quizScore++;
+              fbBox.className = "quiz-feedback show-correct";
+              fbBox.innerHTML = `<strong>¡Excelente!</strong> ${question.explanation}`;
+            } else {
+              fbBox.className = "quiz-feedback show-incorrect";
+              fbBox.innerHTML = `<strong>Respuesta Incorrecta:</strong> ${question.explanation}`;
+            }
+
+            answeredCount++;
+            updateQuizScore();
+          });
+        });
+      }
+
+      function updateQuizScore() {
+        document.getElementById("quizScoreNumber").textContent = quizScore.toString();
+        document.getElementById("quizBadgeScore").textContent = `${quizScore}/5`;
+
+        const encouragement = document.getElementById("quizEncouragement");
+        if (answeredCount === 5) {
+          if (quizScore === 5) {
+            encouragement.innerHTML = "🏆 ¡Perfecto! Dominas los conceptos fundamentales de BI.";
+            encouragement.style.color = "var(--success)";
+          } else if (quizScore >= 3) {
+            encouragement.innerHTML = "👏 ¡Buen trabajo! Tienes un criterio analítico sólido.";
+            encouragement.style.color = "var(--primary)";
+          } else {
+            encouragement.innerHTML = "📚 Buen esfuerzo. Revisa el glosario y el consultor para reforzar.";
+            encouragement.style.color = "var(--warning)";
+          }
+        } else {
+          encouragement.textContent = `Llevas ${answeredCount} de 5 casos analizados.`;
+        }
+      }
+
+      document.getElementById("btnResetQuiz").addEventListener("click", () => {
+        quizScore = 0;
+        answeredCount = 0;
+        for (let k in userAnswers) delete userAnswers[k];
+        updateQuizScore();
+        renderQuiz();
+      });
+
+      /* ========================================================================
+         10. GLOSARIO DE TÉRMINOS ESENCIALES DE BI
+         ======================================================================== */
+      const GLOSSARY_TERMS = [
+        {
+          term: "Data Warehouse (DWH)",
+          tag: "Arquitectura",
+          def: "Almacén centralizado de datos empresariales optimizado para consultas y lectura rápida, estructurado a partir de diversas fuentes operativas."
+        },
+        {
+          term: "Data Lake",
+          tag: "Arquitectura",
+          def: "Repositorio masivo que almacena grandes volúmenes de datos en su formato original y crudo (estructurados, semiestructurados y no estructurados)."
+        },
+        {
+          term: "ETL / ELT",
+          tag: "Ingeniería de Datos",
+          def: "Procesos de Extracción, Transformación y Carga. En ETL los datos se limpian antes de guardarse; en ELT se cargan en crudo y se transforman en la nube."
+        },
+        {
+          term: "Tabla de Hechos (Fact Table)",
+          tag: "Modelado",
+          def: "Tabla principal del esquema dimensional que contiene las métricas cuantitativas y transaccionales (ventas, montos, cantidades) y claves foráneas."
+        },
+        {
+          term: "Tabla de Dimensión (Dimension)",
+          tag: "Modelado",
+          def: "Tabla que rodea a los hechos aportando el contexto analítico cualitativo (tiempo, geografía, producto, cliente, canal)."
+        },
+        {
+          term: "Granularidad",
+          tag: "Modelado",
+          def: "Nivel de detalle atómico que representa una sola fila en una tabla de datos (ej. un producto en un ticket vs el resumen diario de la tienda)."
+        },
+        {
+          term: "Drill-Down / Roll-Up",
+          tag: "Navegación",
+          def: "Acción interactiva de pasar de un resumen general a un detalle profundo (Drill-down: Año -> Mes -> Día) o viceversa (Roll-up)."
+        },
+        {
+          term: "DAX (Data Analysis Expressions)",
+          tag: "Herramientas",
+          def: "Lenguaje de fórmulas y consultas utilizado en Power BI, Power Pivot y SSAS para calcular medidas y columnas calculadas dinámicas."
+        },
+        {
+          term: "SQL (Structured Query Language)",
+          tag: "Bases de Datos",
+          def: "Lenguaje estándar para interactuar con bases de datos relacionales mediante sentencias como SELECT, WHERE, GROUP BY y JOIN."
+        },
+        {
+          term: "SLA (Service Level Agreement)",
+          tag: "Métricas",
+          def: "Acuerdo de nivel de servicio que fija compromisos cuantificables (ej. tiempo de respuesta de tickets o disponibilidad del 99.9% de un servicio)."
+        },
+        {
+          term: "Outlier (Valor Atípico)",
+          tag: "Estadística",
+          def: "Observación numérica anormalmente lejana del resto de los datos, que puede ser fruto de un error de captura o de un hecho extraordinario."
+        },
+        {
+          term: "Data Storytelling",
+          tag: "Comunicación",
+          def: "Habilidad de comunicar hallazgos analíticos complejos combinando datos rigurosos, visualizaciones limpias y una narrativa orientada a la acción directiva."
+        }
+      ];
+
+      function renderGlossary(filterText = "") {
+        const grid = document.getElementById("glossaryGrid");
+        grid.innerHTML = "";
+
+        const filtered = GLOSSARY_TERMS.filter(item => {
+          if (!filterText) return true;
+          const search = filterText.toLowerCase();
+          return item.term.toLowerCase().includes(search) || item.def.toLowerCase().includes(search) || item.tag.toLowerCase().includes(search);
+        });
+
+        if (filtered.length === 0) {
+          grid.innerHTML = `<div style="grid-column: 1/-1; text-align:center; padding:2rem; color:var(--text-muted);">No se encontraron términos que coincidan con la búsqueda.</div>`;
+          return;
+        }
+
+        filtered.forEach(item => {
+          const card = document.createElement("div");
+          card.className = "glossary-card";
+          card.innerHTML = `
+            <h4>${item.term}</h4>
+            <p>${item.def}</p>
+            <span class="glossary-tag">🏷️ ${item.tag}</span>
+          `;
+          grid.appendChild(card);
+        });
+      }
+
+      document.getElementById("glossarySearch").addEventListener("input", (e) => {
+        renderGlossary(e.target.value.trim());
+      });
+
+      /* ========================================================================
+         11. GENERADOR DE REPORTE EJECUTIVO (Modal y Copiado)
+         ======================================================================== */
+      const btnOpenReport = document.getElementById("btnOpenReport");
+      const reportModal = document.getElementById("reportModal");
+      const btnCloseModal = document.getElementById("btnCloseModal");
+      const reportContent = document.getElementById("reportContent");
+      const btnCopyReport = document.getElementById("btnCopyReport");
+      const btnPrintReport = document.getElementById("btnPrintReport");
+
+      btnOpenReport.addEventListener("click", () => {
+        const totalRev = currentFilteredData.reduce((a, b) => a + b.ingreso, 0);
+        const totalCost = currentFilteredData.reduce((a, b) => a + b.costo, 0);
+        const profit = totalRev - totalCost;
+        const margin = totalRev > 0 ? ((profit / totalRev) * 100).toFixed(1) : "0.0";
+        const orders = currentFilteredData.length;
+        const aov = orders > 0 ? Math.round(totalRev / orders) : 0;
+
+        const regionName = filterRegion.value === "ALL" ? "Todas las Regiones" : filterRegion.value;
+        const catName = filterCategory.value === "ALL" ? "Todas las Categorías" : filterCategory.value;
+        const qName = filterQuarter.value === "ALL" ? "Todo el Año" : filterQuarter.value;
+
+        // Categoría top
+        const catAgg = {};
+        currentFilteredData.forEach(d => {
+          catAgg[d.categoria] = (catAgg[d.categoria] || 0) + d.ingreso;
+        });
+        const topCat = Object.entries(catAgg).sort((a, b) => b[1] - a[1])[0] || ["N/A", 0];
+
+        reportContent.innerHTML = `
+          <div style="margin-bottom:1.25rem;">
+            <p style="font-size:0.85rem; color:var(--text-muted);">Fecha de Generación: ${new Date().toLocaleDateString("es-ES", { dateStyle: "full" })}</p>
+            <h4 style="font-size:1.1rem; color:var(--primary); margin:0.4rem 0;">Diagnóstico Sintético de Negocio</h4>
+            <p style="font-size:0.92rem;">Filtros Aplicados: <strong>${regionName}</strong> • Categoría: <strong>${catName}</strong> • Periodo: <strong>${qName}</strong></p>
+          </div>
+
+          <table style="width:100%; border-collapse:collapse; margin-bottom:1.25rem; font-size:0.9rem;">
+            <tr style="background:var(--bg-surface-elevated); border-bottom:1px solid var(--border-color);">
+              <th style="padding:0.5rem; text-align:left;">Métrica Clave</th>
+              <th style="padding:0.5rem; text-align:right;">Valor Obtenido</th>
+              <th style="padding:0.5rem; text-align:left;">Estado Analítico</th>
+            </tr>
+            <tr style="border-bottom:1px solid var(--border-color);">
+              <td style="padding:0.5rem;">Ingresos Totales (Revenue)</td>
+              <td style="padding:0.5rem; text-align:right; font-weight:700;">$${totalRev.toLocaleString("es-MX")} USD</td>
+              <td style="padding:0.5rem;"><span class="badge badge-success">Meta Cumplida</span></td>
+            </tr>
+            <tr style="border-bottom:1px solid var(--border-color);">
+              <td style="padding:0.5rem;">Margen Bruto de Ganancia</td>
+              <td style="padding:0.5rem; text-align:right; font-weight:700;">${margin}% ($${profit.toLocaleString("es-MX")})</td>
+              <td style="padding:0.5rem;"><span class="badge ${parseFloat(margin) >= 30 ? 'badge-success' : 'badge-warning'}">${parseFloat(margin) >= 30 ? 'Saludable' : 'Vigilar'}</span></td>
+            </tr>
+            <tr style="border-bottom:1px solid var(--border-color);">
+              <td style="padding:0.5rem;">Ticket Promedio (AOV)</td>
+              <td style="padding:0.5rem; text-align:right; font-weight:700;">$${aov.toLocaleString("es-MX")} USD</td>
+              <td style="padding:0.5rem;"><span class="badge badge-info">${orders} Órdenes</span></td>
+            </tr>
+            <tr>
+              <td style="padding:0.5rem;">Líder de Facturación</td>
+              <td style="padding:0.5rem; text-align:right; font-weight:700;">${topCat[0]}</td>
+              <td style="padding:0.5rem;">$${topCat[1].toLocaleString("es-MX")} USD</td>
+            </tr>
+          </table>
+
+          <div style="background:var(--bg-surface-elevated); padding:1rem; border-radius:var(--radius-md); border-left:4px solid var(--primary); font-size:0.9rem; line-height:1.5;">
+            <strong>Recomendaciones Estratégicas para la Dirección:</strong>
+            <ul style="margin-left:1.2rem; margin-top:0.4rem;">
+              <li><strong>Priorizar productos de Software y Soluciones:</strong> Demuestran un margen bruto superior al 65%, impulsando la rentabilidad global.</li>
+              <li><strong>Optimizar el Ticket Promedio:</strong> Implementar estrategias de venta cruzada (cross-selling) en la categoría Papelería para amortizar los costos de envío.</li>
+              <li><strong>Alerta en inventario regional:</strong> Asegurar disponibilidad en la Región Occidente para atender picos de demanda del Q4.</li>
+            </ul>
+          </div>
+        `;
+
+        reportModal.classList.add("open");
+      });
+
+      btnCloseModal.addEventListener("click", () => {
+        reportModal.classList.remove("open");
+      });
+
+      window.addEventListener("click", (e) => {
+        if (e.target === reportModal) {
+          reportModal.classList.remove("open");
+        }
+      });
+
+      btnCopyReport.addEventListener("click", () => {
+        const text = reportContent.innerText;
+        navigator.clipboard.writeText(text).then(() => {
+          btnCopyReport.textContent = "✅ ¡Copiado!";
+          setTimeout(() => {
+            btnCopyReport.textContent = "📋 Copiar al Portapapeles";
+          }, 2000);
+        });
+      });
+
+      btnPrintReport.addEventListener("click", () => {
+        window.print();
+      });
+
+      /* ========================================================================
+         12. INICIALIZACIÓN GENERAL
+         ======================================================================== */
+      function init() {
+        applyFilters();
+        updateChartRecommendation();
+        calcRoi();
+        calcCac();
+        calcChurn();
+        calcMargin();
+        renderQuiz();
+        renderGlossary();
+      }
+
+      init();
+    })();
+  </script>
+</body>
+</html>
